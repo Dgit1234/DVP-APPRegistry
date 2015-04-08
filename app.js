@@ -162,17 +162,84 @@ RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/DeleteVoiceAppReco
     }
     return next();
 });
-
-
-
-
 //.......................................................................................................................
-RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindAllVoiceAppRecords',function(req,res,next)
+RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/ChangeVoiceAppAvailability',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
         // log.info("Inputs : "+req.body);
-        VAPP.FindAllVoiceAppRecords(function(err,resz)
+        VAPP.ChangeVoiceAppAvailability(req.body,function(err,resz)
+        {
+
+
+            if(err)
+            {
+                console.log("Error in Availability change of  Voice app : "+err);
+                //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
+                res.end(err.toString());
+            }
+            else if(resz)
+            {
+                console.log(" voice app availability changed : "+resz);
+                //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                res.end(resz.toString());
+            }
+
+        });
+
+    }
+    catch(ex)
+    {
+        console.log("Exception found in Add New Developer : "+ex);
+        //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
+        res.end(ex.toString());
+    }
+    return next();
+});
+//.......................................................................................................................
+RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/VoiceAppUrlModification',function(req,res,next)
+{
+    // log.info("\n.............................................Add appointment Starts....................................................\n");
+    try {
+        // log.info("Inputs : "+req.body);
+        VAPP.VoiceAppUrlModification(req.body,function(err,resz)
+        {
+
+
+            if(err)
+            {
+                console.log("Error in URL change of  Voice app : "+err);
+                //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
+                res.end(err.toString());
+            }
+            else if(resz)
+            {
+                console.log(" voice app URL changed : "+resz);
+                //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                res.end(resz.toString());
+            }
+
+        });
+
+    }
+    catch(ex)
+    {
+        console.log("Exception found in Add New Developer : "+ex);
+        //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
+        res.end(ex.toString());
+    }
+    return next();
+});
+
+
+
+//.......................................................................................................................
+RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindAllVoiceAppRecords/:DevID',function(req,res,next)
+{
+    // log.info("\n.............................................Add appointment Starts....................................................\n");
+    try {
+        // log.info("Inputs : "+req.body);
+        VAPP.FindAllVoiceAppRecords(req.params.DevID,function(err,resz)
         {
 
 
@@ -202,12 +269,12 @@ RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindAllVoiceAppReco
 });
 
 //.......................................................................................................................
-RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindVoiceAppRecordForID/:VID',function(req,res,next)
+RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindVoiceAppRecordForID/:VID/:DevID',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
         // log.info("Inputs : "+req.body);
-        VAPP.FindVoiceAppRecordForID(req.params.VID,function(err,resz)
+        VAPP.FindVoiceAppRecordForID(req.params.VID,req.params.DevID,function(err,resz)
         {
 
 

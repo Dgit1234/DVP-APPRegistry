@@ -29,7 +29,8 @@ function AddNewVoiceAppRecord(VAPPObj,callback)
                                 TenantId: VAPPObj.TenantId,
                                 ObjClass: VAPPObj.ObjClass,
                                 ObjType: VAPPObj.ObjType,
-                                ObjCategory: VAPPObj.ObjCategory
+                                ObjCategory: VAPPObj.ObjCategory,
+                                Availability:VAPPObj.Availability
 
                             }
                         ).complete(function(err,result)
@@ -110,10 +111,10 @@ function MapDeveloperAndApplication(MapObj,callback)
     }
 }
 
-function FindAllVoiceAppRecords(callback)
+function FindAllVoiceAppRecords(VAPPObj,callback)
 {
     try{
-        DbConn.Application.findAll().complete(function (err, Aobj) {
+        DbConn.Application.findAll({where: [{AppDeveloperId: VAPPObj}]}).complete(function (err, Aobj) {
 
             if(err)
             {
@@ -138,10 +139,10 @@ function FindAllVoiceAppRecords(callback)
     }
 }
 
-function FindVoiceAppRecordForID(VID,callback)
+function FindVoiceAppRecordForID(VID,DEVID,callback)
 {
     try{
-        DbConn.Application.find({where: [{id: VID}]}).complete(function (err, Aobj) {
+        DbConn.Application.find({where: [{id: VID},{AppDeveloperId:DEVID}]}).complete(function (err, Aobj) {
 
             if(err)
             {
@@ -206,9 +207,99 @@ function DeleteVoiceAppRecord(VAPPObj,callback)
     }
 }
 
+function ChangeVoiceAppAvailability(VAPPObj,callback)
+{
+    try
+    {
+        DbConn.Application.find({where: [{id: VAPPObj.VID},{AppDeveloperId:VAPPObj.DevID}]}).complete(function (err, Aobj) {
+            if(err)
+            {
+                callback(err,undefined);
+            }
+            else
+            {
+                if(Aobj)
+                {
+
+                    Aobj.update(
+                        {
+                            Availability: VAPPObj.Availability
+
+                        }
+                    ).then(function (result) {
+
+                            callback(undefined, JSON.stringify(result));
+
+                        }).error(function (errz) {
+                            console.log("Availability updation failed");
+
+                            callback("Error Found : "+errz,undefined);
+
+                        });
+
+                }
+                else
+                {
+                    callback('No record found',undefined);
+                }
+            }
+        });
+    }
+    catch(ex)
+    {
+        callback(ex,undefined);
+    }
+}
+
+function VoiceAppUrlModification(VAPPObj,callback)
+{
+    try
+    {
+        DbConn.Application.find({where: [{id: VAPPObj.VID},{AppDeveloperId:VAPPObj.DevID}]}).complete(function (err, Aobj) {
+            if(err)
+            {
+                callback(err,undefined);
+            }
+            else
+            {
+                if(Aobj)
+                {
+
+                    Aobj.update(
+                        {
+                            Url: VAPPObj.Url
+
+                        }
+                    ).then(function (result) {
+
+                            callback(undefined, JSON.stringify(result));
+
+                        }).error(function (errz) {
+                            console.log("URL updation failed");
+
+                            callback("Error Found : "+errz,undefined);
+
+                        });
+
+                }
+                else
+                {
+                    callback('No record found',undefined);
+                }
+            }
+        });
+    }
+    catch(ex)
+    {
+        callback(ex,undefined);
+    }
+}
+
 module.exports.AddNewVoiceAppRecord = AddNewVoiceAppRecord;
 module.exports.MapDeveloperAndApplication = MapDeveloperAndApplication;
 module.exports.FindAllVoiceAppRecords = FindAllVoiceAppRecords;
 module.exports.FindVoiceAppRecordForID = FindVoiceAppRecordForID;
 module.exports.DeleteVoiceAppRecord = DeleteVoiceAppRecord;
+module.exports.ChangeVoiceAppAvailability = ChangeVoiceAppAvailability;
+module.exports.VoiceAppUrlModification = VoiceAppUrlModification;
 
