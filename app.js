@@ -128,3 +128,110 @@ RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/MapDeveloperAndApp
     }
     return next();
 });
+//.......................................................................................................................
+RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/DeleteVoiceAppRecord',function(req,res,next)
+{
+    // log.info("\n.............................................Add appointment Starts....................................................\n");
+    try {
+        // log.info("Inputs : "+req.body);
+        VAPP.DeleteVoiceAppRecord(req.body,function(err,resz)
+        {
+
+
+            if(err)
+            {
+                console.log("Error in Delete Voice app : "+err);
+                //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
+                res.end(err.toString());
+            }
+            else if(resz)
+            {
+                console.log(" voice app deletion Succeeded : "+resz);
+                //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                res.end(resz.toString());
+            }
+
+        });
+
+    }
+    catch(ex)
+    {
+        console.log("Exception found in Add New Developer : "+ex);
+        //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
+        res.end(ex.toString());
+    }
+    return next();
+});
+
+
+
+
+//.......................................................................................................................
+RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindAllVoiceAppRecords',function(req,res,next)
+{
+    // log.info("\n.............................................Add appointment Starts....................................................\n");
+    try {
+        // log.info("Inputs : "+req.body);
+        VAPP.FindAllVoiceAppRecords(function(err,resz)
+        {
+
+
+            if(err)
+            {
+                console.log("Error in Searching Voice apps : "+err);
+                //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
+                res.end(err.toString());
+            }
+            else if(resz)
+            {
+                console.log("Result : "+resz);
+                //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                res.end(resz);
+            }
+
+        });
+
+    }
+    catch(ex)
+    {
+        console.log("Exception found in searching Voice App records : "+ex);
+        //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
+        res.end(ex.toString());
+    }
+    return next();
+});
+
+//.......................................................................................................................
+RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindVoiceAppRecordForID/:VID',function(req,res,next)
+{
+    // log.info("\n.............................................Add appointment Starts....................................................\n");
+    try {
+        // log.info("Inputs : "+req.body);
+        VAPP.FindVoiceAppRecordForID(req.params.VID,function(err,resz)
+        {
+
+
+            if(err)
+            {
+                console.log("Error in Searching Voice apps : "+err);
+                //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
+                res.end(err.toString());
+            }
+            else if(resz)
+            {
+                console.log("Result : "+resz);
+                //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                res.end(resz);
+            }
+
+        });
+
+    }
+    catch(ex)
+    {
+        console.log("Exception found in searching Voice App records for id : "+req.body.id+" Exception : "+ex);
+        //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
+        res.end(ex.toString());
+    }
+    return next();
+});

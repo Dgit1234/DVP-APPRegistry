@@ -68,33 +68,39 @@ function MapDeveloperAndApplication(MapObj,callback)
             {
                 callback(err,undefined);
             }
-            else
-            {
-                DbConn.AppDeveloper.find({where: [{id: MapObj.Devid}]}).complete(function (errz, Dobj)
+            else {
+                if (Aobj)
                 {
-                    if(errz)
-                    {
-                        callback(err,undefined)
+                    DbConn.AppDeveloper.find({where: [{id: MapObj.Devid}]}).complete(function (errz, Dobj) {
+                        if (errz) {
+                            callback(err, undefined)
 
-                    }
-                    else
-                    {
-                        //Dobj.addApplication(Aobj).complete(function (errx, MapRes)
-                        Aobj.setAppDeveloper(Dobj).complete(function (errx, MapRes)
-                        {
-                            if(errx)
-                            {
-                                callback(errx,undefined);
+                        }
+                        else {
+                            if (Dobj) {
+                                //Dobj.addApplication(Aobj).complete(function (errx, MapRes)
+                                Aobj.setAppDeveloper(Dobj).complete(function (errx, MapRes) {
+                                    if (errx) {
+                                        callback(errx, undefined);
+                                    }
+                                    else {
+                                        callback(undefined, "Success");
+                                    }
+                                })
                             }
-                            else
-                            {
-                                callback(undefined,"Success");
+                            else {
+                                callback("No record found for AppDevelopers : "+MapObj.Devid);
                             }
-                        })
-                    }
+                        }
 
-                });
+                    });
+                }
+                else
+                {
+                    callback("No record found for Application : "+MapObj.Appid);
+                }
             }
+
 
         });
     }
@@ -103,6 +109,106 @@ function MapDeveloperAndApplication(MapObj,callback)
         callback(ex,undefined);
     }
 }
+
+function FindAllVoiceAppRecords(callback)
+{
+    try{
+        DbConn.Application.findAll().complete(function (err, Aobj) {
+
+            if(err)
+            {
+                callback(err,undefined);
+            }
+            else
+            {
+                if(Aobj.length>0) {
+                    callback(undefined, JSON.stringify(Aobj));
+                }
+                else{
+                    callback("No record Found",undefined);
+                }
+            }
+
+        });
+
+    }
+    catch(ex)
+    {
+        callback(ex,undefined);
+    }
+}
+
+function FindVoiceAppRecordForID(VID,callback)
+{
+    try{
+        DbConn.Application.find({where: [{id: VID}]}).complete(function (err, Aobj) {
+
+            if(err)
+            {
+                callback(err,undefined);
+            }
+            else
+            {
+                if(Aobj) {
+                    callback(undefined, JSON.stringify(Aobj));
+                }
+                else{
+                    callback("No record Found",undefined);
+                }
+            }
+
+        });
+
+    }
+    catch(ex)
+    {
+        callback(ex,undefined);
+    }
+}
+
+function DeleteVoiceAppRecord(VAPPObj,callback)
+{
+    try
+    {
+        DbConn.Application.find().complete(function (err, Aobj) {
+
+            if(err)
+            {
+                callback(err,undefined);
+
+            }
+            else
+            {
+                DbConn.Application.destroy({where: [{id: VAPPObj.id}]}).complete(function(err,result)
+                {
+                    if(err)
+                    {
+                        callback(err,undefined);
+                    }
+                    else
+                    {
+                        if(result)
+                        {
+                            callback(undefined,result);
+                        }
+                        else
+                        {
+                            callback("No record found",undefined);
+                        }
+                    }
+                })
+            }
+        });
+    }
+    catch(ex)
+    {
+        callback(ex,undefined);
+    }
+}
+
 module.exports.AddNewVoiceAppRecord = AddNewVoiceAppRecord;
 module.exports.MapDeveloperAndApplication = MapDeveloperAndApplication;
+module.exports.FindAllVoiceAppRecords = FindAllVoiceAppRecords;
+module.exports.FindVoiceAppRecordForID = FindVoiceAppRecordForID;
+module.exports.DeleteVoiceAppRecord = DeleteVoiceAppRecord;
 
