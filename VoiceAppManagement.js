@@ -331,9 +331,6 @@ function UrlChecker(VAPPObj,callback)
                         console.log('problem with request: ' + e.message);
                         callback(e.message,undefined);
                     });
-
-// write data to request body
-                    //req.write(postData);
                     req.end();
 
                 }
