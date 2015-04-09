@@ -5,6 +5,8 @@
 var DbConn = require('./DVP-DBModels');
 var messageFormatter = require('./DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 var stringify = require('stringify');
+var open = require('open');
+var http=require('http');
 
 
 function AddNewVoiceAppRecord(VAPPObj,callback)
@@ -295,6 +297,60 @@ function VoiceAppUrlModification(VAPPObj,callback)
     }
 }
 
+function UrlChecker(VAPPObj,callback)
+{
+    try
+    {
+        DbConn.Application.find({where: [{id: VAPPObj.VID},{AppDeveloperId:VAPPObj.DevID}]}).complete(function (err, Aobj) {
+
+            if(err)
+            {
+                callback(err,undefined);
+            }
+            else
+            {
+                if(Aobj)
+                {
+
+                    var options = {
+                        hostname: Aobj.Url
+
+                    };
+
+                    var req = http.request(options, function(res) {
+                        console.log('STATUS: ' + res.statusCode);
+                        callback(undefined,res.statusCode);
+                        //console.log('HEADERS: ' + JSON.stringify(res.headers));
+                        res.setEncoding('utf8');
+                        res.on('data', function (chunk) {
+                            //console.log('BODY: ' + chunk);
+                        });
+                    });
+
+                    req.on('error', function(e) {
+                        console.log('problem with request: ' + e.message);
+                        callback(e.message,undefined);
+                    });
+
+// write data to request body
+                    //req.write(postData);
+                    req.end();
+
+                }
+                else
+                {
+                    callback("No rec",undefined);
+                }
+            }
+
+        });
+    }
+    catch(ex)
+    {
+        callback(ex,err);
+    }
+}
+
 module.exports.AddNewVoiceAppRecord = AddNewVoiceAppRecord;
 module.exports.MapDeveloperAndApplication = MapDeveloperAndApplication;
 module.exports.FindAllVoiceAppRecords = FindAllVoiceAppRecords;
@@ -302,4 +358,5 @@ module.exports.FindVoiceAppRecordForID = FindVoiceAppRecordForID;
 module.exports.DeleteVoiceAppRecord = DeleteVoiceAppRecord;
 module.exports.ChangeVoiceAppAvailability = ChangeVoiceAppAvailability;
 module.exports.VoiceAppUrlModification = VoiceAppUrlModification;
+module.exports.UrlChecker = UrlChecker;
 

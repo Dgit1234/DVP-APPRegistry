@@ -4,6 +4,8 @@
 var restify = require('restify');
 var Developer=require('./AppDeveloperManagement.js');
 var VAPP=require('./VoiceAppManagement.js');
+var http=require('http');
+
 
 var RestServer = restify.createServer({
     name: "myapp",
@@ -15,6 +17,8 @@ var RestServer = restify.createServer({
 //Server listen
 RestServer.listen(8083, function () {
     console.log('%s listening at %s', RestServer.name, RestServer.url);
+
+
 
 });
 //Enable request body parsing(access)
@@ -231,6 +235,42 @@ RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/VoiceAppUrlModific
     return next();
 });
 
+//.......................................................................................................................
+RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/URLtest',function(req,res,next)
+{
+    // log.info("\n.............................................Add appointment Starts....................................................\n");
+    try {
+
+        // log.info("Inputs : "+req.body);
+        VAPP.UrlChecker(req.body,function(err,resz)
+        {
+
+
+            if(err)
+            {
+                console.log("Error in URL change of  Voice app : "+err);
+                //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
+                res.end(err.toString());
+            }
+            else if(resz)
+            {
+                console.log(" voice app URL Checked, Status code : "+resz);
+                //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                res.end(resz.toString());
+            }
+
+        });
+
+
+    }
+    catch(ex)
+    {
+        console.log("Exception found in Add New Developer : "+ex);
+        //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
+        res.end(ex.toString());
+    }
+    return next();
+});
 
 
 //.......................................................................................................................
