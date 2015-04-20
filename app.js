@@ -5,6 +5,7 @@ var restify = require('restify');
 var Developer=require('./AppDeveloperManagement.js');
 var VAPP=require('./VoiceAppManagement.js');
 var http=require('http');
+var cors = require('cors')
 
 
 var RestServer = restify.createServer({
@@ -14,13 +15,16 @@ var RestServer = restify.createServer({
 {
 
 });
+
+RestServer.use(cors());
 //Server listen
-RestServer.listen(8083, function () {
+RestServer.listen(8085, function () {
     console.log('%s listening at %s', RestServer.name, RestServer.url);
 
 
 
 });
+
 //Enable request body parsing(access)
 RestServer.use(restify.bodyParser());
 RestServer.use(restify.acceptParser(RestServer.acceptable));
@@ -41,13 +45,17 @@ RestServer.post('/dvp/:version/APPRegistry/AppDeveloperManagement/AddNewDevelope
             {
                 console.log("Error in Add New Developer : "+err);
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
-                res.end(err.toString());
+                res.setHeader('Content-Type', "application/json");
+               // res.end(err);
+                res.end(res.body);
             }
             else if(resz)
             {
                 console.log("New Developer record saving Succeeded : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
-                res.end(resz);
+                res.setHeader('Content-Type', "application/json");
+                res.send(resz);
+                res.end();
             }
 
         });
@@ -342,3 +350,13 @@ RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindVoiceAppRecordF
     }
     return next();
 });
+
+
+/*
+var swaggerUi = new SwaggerUi({
+    url:"http://petstore.swagger.io/v2/swagger.json",
+    dom_id:"swagger-ui-container"
+});
+
+swaggerUi.load();
+    */
