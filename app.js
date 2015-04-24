@@ -5,8 +5,10 @@ var restify = require('restify');
 var Developer=require('./AppDeveloperManagement.js');
 var VAPP=require('./VoiceAppManagement.js');
 var http=require('http');
-var cors = require('cors')
+var cors = require('cors');
+var config = require('config');
 
+var port = config.Host.port || 3000;
 
 var RestServer = restify.createServer({
     name: "myapp",
@@ -18,7 +20,7 @@ var RestServer = restify.createServer({
 
 RestServer.use(cors());
 //Server listen
-RestServer.listen(8085, function () {
+RestServer.listen(port, function () {
     console.log('%s listening at %s', RestServer.name, RestServer.url);
 
 
