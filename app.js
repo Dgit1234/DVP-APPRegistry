@@ -9,6 +9,7 @@ var cors = require('cors');
 var config = require('config');
 
 var port = config.Host.port || 3000;
+var version=config.Host.version;
 
 var RestServer = restify.createServer({
     name: "myapp",
@@ -34,7 +35,7 @@ RestServer.use(restify.queryParser());
 
 //.......................................................................................................................
 
-RestServer.post('/dvp/:version/APPRegistry/AppDeveloperManagement/AddNewDeveloperRecord',function(req,res,next)
+RestServer.post('/dvp/'+version+'/APPRegistry/AppDeveloperManagement/AddNewDeveloperRecord',function(req,res,next)
 {
    // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
@@ -74,7 +75,7 @@ RestServer.post('/dvp/:version/APPRegistry/AppDeveloperManagement/AddNewDevelope
 
 //.......................................................................................................................
 
-RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/AddNewVoiceAppRecord',function(req,res,next)
+RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/AddNewVoiceAppRecord',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
@@ -109,7 +110,7 @@ RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/AddNewVoiceAppReco
 });
 
 //.......................................................................................................................
-RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/MapDeveloperAndApplication',function(req,res,next)
+RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/MapDeveloperAndApplication',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
@@ -143,7 +144,7 @@ RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/MapDeveloperAndApp
     return next();
 });
 //.......................................................................................................................
-RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/DeleteVoiceAppRecord',function(req,res,next)
+RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/DeleteVoiceAppRecord',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
@@ -177,7 +178,7 @@ RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/DeleteVoiceAppReco
     return next();
 });
 //.......................................................................................................................
-RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/ChangeVoiceAppAvailability',function(req,res,next)
+RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/ChangeVoiceAppAvailability',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
@@ -211,7 +212,7 @@ RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/ChangeVoiceAppAvai
     return next();
 });
 //.......................................................................................................................
-RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/VoiceAppUrlModification',function(req,res,next)
+RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppUrlModification',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
@@ -246,7 +247,7 @@ RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/VoiceAppUrlModific
 });
 
 //.......................................................................................................................
-RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/URLtest',function(req,res,next)
+RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/URLtest',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
@@ -284,7 +285,7 @@ RestServer.post('/dvp/:version/APPRegistry/VoiceAppManagement/URLtest',function(
 
 
 //.......................................................................................................................
-RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindAllVoiceAppRecords/:DevID',function(req,res,next)
+RestServer.get('/dvp/'+version+'/APPRegistry/VoiceAppManagement/FindAllVoiceAppRecords/:DevID',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
@@ -319,7 +320,7 @@ RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindAllVoiceAppReco
 });
 
 //.......................................................................................................................
-RestServer.get('/dvp/:version/APPRegistry/VoiceAppManagement/FindVoiceAppRecordForID/:VID/:DevID',function(req,res,next)
+RestServer.get('/dvp/'+version+'/APPRegistry/VoiceAppManagement/FindVoiceAppRecordForID/:VID/:DevID',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
