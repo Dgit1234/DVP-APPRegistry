@@ -10,6 +10,7 @@ var config = require('config');
 
 var port = config.Host.port || 3000;
 var version=config.Host.version;
+var version=config.Host.version;
 
 var RestServer = restify.createServer({
     name: "myapp",

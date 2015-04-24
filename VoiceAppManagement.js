@@ -3,8 +3,8 @@
  * Created by pawan on 4/8/2015.
  */
 
-var DbConn = require('./DVP-DBModels');
-var messageFormatter = require('./DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
+var DbConn = require('DVP-DBModels');
+//var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 var stringify = require('stringify');
 var open = require('open');
 var http=require('http');
