@@ -7,6 +7,7 @@ var VAPP=require('./VoiceAppManagement.js');
 var http=require('http');
 var cors = require('cors');
 var config = require('config');
+var logger=require('')
 
 var port = config.Host.port || 3000;
 var version=config.Host.version;
