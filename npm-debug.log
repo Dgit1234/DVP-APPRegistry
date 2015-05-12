@@ -1,0 +1,117 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.36
+4 verbose node symlink C:\Program Files\nodejs\\node.exe
+5 warn package.json DVP-APPRegistry@1.0.0 No description
+6 warn package.json DVP-APPRegistry@1.0.0 No README data
+7 verbose readDependencies using package.json deps
+8 verbose install where, deps [ 'D:\\My Projects\\DVP\\DVP-APPRegistry',
+8 verbose install   [ 'DVP-Common',
+8 verbose install     'DVP-DBModels',
+8 verbose install     'config',
+8 verbose install     'cors',
+8 verbose install     'http',
+8 verbose install     'open',
+8 verbose install     'restify',
+8 verbose install     'stringify' ] ]
+9 info preinstall DVP-APPRegistry@1.0.0
+10 warn package.json DVP-DBModels@0.0.0 No description
+11 warn package.json http@0.0.0 http is also the name of a node core module.
+12 warn package.json http@0.0.0 No description
+13 warn package.json http@0.0.0 No repository field.
+14 warn package.json http@0.0.0 No README data
+15 verbose readDependencies using package.json deps
+16 verbose cache add [ 'DVP-Common@git+https://github.com/DuoSoftware/DVP-Common',
+16 verbose cache add   null ]
+17 verbose cache add name=undefined spec="DVP-Common@git+https://github.com/DuoSoftware/DVP-Common" args=["DVP-Common@git+https://github.com/DuoSoftware/DVP-Common",null]
+18 verbose parsed url { protocol: null,
+18 verbose parsed url   slashes: null,
+18 verbose parsed url   auth: null,
+18 verbose parsed url   host: null,
+18 verbose parsed url   port: null,
+18 verbose parsed url   hostname: null,
+18 verbose parsed url   hash: null,
+18 verbose parsed url   search: null,
+18 verbose parsed url   query: null,
+18 verbose parsed url   pathname: 'DVP-Common@git+https://github.com/DuoSoftware/DVP-Common',
+18 verbose parsed url   path: 'DVP-Common@git+https://github.com/DuoSoftware/DVP-Common',
+18 verbose parsed url   href: 'DVP-Common@git+https://github.com/DuoSoftware/DVP-Common' }
+19 verbose cache add [ 'DVP-DBModels@git+https://github.com/DuoSoftware/DVP-DBModels',
+19 verbose cache add   null ]
+20 verbose cache add name=undefined spec="DVP-DBModels@git+https://github.com/DuoSoftware/DVP-DBModels" args=["DVP-DBModels@git+https://github.com/DuoSoftware/DVP-DBModels",null]
+21 verbose parsed url { protocol: null,
+21 verbose parsed url   slashes: null,
+21 verbose parsed url   auth: null,
+21 verbose parsed url   host: null,
+21 verbose parsed url   port: null,
+21 verbose parsed url   hostname: null,
+21 verbose parsed url   hash: null,
+21 verbose parsed url   search: null,
+21 verbose parsed url   query: null,
+21 verbose parsed url   pathname: 'DVP-DBModels@git+https://github.com/DuoSoftware/DVP-DBModels',
+21 verbose parsed url   path: 'DVP-DBModels@git+https://github.com/DuoSoftware/DVP-DBModels',
+21 verbose parsed url   href: 'DVP-DBModels@git+https://github.com/DuoSoftware/DVP-DBModels' }
+22 verbose already installed skipping config@^1.12.0 D:\My Projects\DVP\DVP-APPRegistry
+23 verbose already installed skipping cors@^2.5.3 D:\My Projects\DVP\DVP-APPRegistry
+24 verbose already installed skipping http@^0.0.0 D:\My Projects\DVP\DVP-APPRegistry
+25 verbose already installed skipping open@^0.0.5 D:\My Projects\DVP\DVP-APPRegistry
+26 verbose already installed skipping restify@^3.0.2 D:\My Projects\DVP\DVP-APPRegistry
+27 verbose already installed skipping stringify@^3.1.0 D:\My Projects\DVP\DVP-APPRegistry
+28 verbose cache add name="DVP-Common" spec="git+https://github.com/DuoSoftware/DVP-Common" args=["DVP-Common","git+https://github.com/DuoSoftware/DVP-Common"]
+29 verbose parsed url { protocol: 'git+https:',
+29 verbose parsed url   slashes: true,
+29 verbose parsed url   auth: null,
+29 verbose parsed url   host: 'github.com',
+29 verbose parsed url   port: null,
+29 verbose parsed url   hostname: 'github.com',
+29 verbose parsed url   hash: null,
+29 verbose parsed url   search: null,
+29 verbose parsed url   query: null,
+29 verbose parsed url   pathname: '/DuoSoftware/DVP-Common',
+29 verbose parsed url   path: '/DuoSoftware/DVP-Common',
+29 verbose parsed url   href: 'git+https://github.com/DuoSoftware/DVP-Common' }
+30 verbose cache add name="DVP-DBModels" spec="git+https://github.com/DuoSoftware/DVP-DBModels" args=["DVP-DBModels","git+https://github.com/DuoSoftware/DVP-DBModels"]
+31 verbose parsed url { protocol: 'git+https:',
+31 verbose parsed url   slashes: true,
+31 verbose parsed url   auth: null,
+31 verbose parsed url   host: 'github.com',
+31 verbose parsed url   port: null,
+31 verbose parsed url   hostname: 'github.com',
+31 verbose parsed url   hash: null,
+31 verbose parsed url   search: null,
+31 verbose parsed url   query: null,
+31 verbose parsed url   pathname: '/DuoSoftware/DVP-DBModels',
+31 verbose parsed url   path: '/DuoSoftware/DVP-DBModels',
+31 verbose parsed url   href: 'git+https://github.com/DuoSoftware/DVP-DBModels' }
+32 silly lockFile 8cbbfae0-ithub-com-DuoSoftware-DVP-Common https://github.com/DuoSoftware/DVP-Common
+33 verbose lock https://github.com/DuoSoftware/DVP-Common C:\Users\Pawan\AppData\Roaming\npm-cache\8cbbfae0-ithub-com-DuoSoftware-DVP-Common.lock
+34 silly lockFile 893be6d7-hub-com-DuoSoftware-DVP-DBModels https://github.com/DuoSoftware/DVP-DBModels
+35 verbose lock https://github.com/DuoSoftware/DVP-DBModels C:\Users\Pawan\AppData\Roaming\npm-cache\893be6d7-hub-com-DuoSoftware-DVP-DBModels.lock
+36 verbose addRemoteGit [ 'https://github.com/DuoSoftware/DVP-DBModels', 'master' ]
+37 verbose addRemoteGit [ 'https://github.com/DuoSoftware/DVP-Common', 'master' ]
+38 warn `git config --get remote.origin.url` returned wrong result (https://github.com/DuoSoftware/DVP-DBModels) undefined
+38 warn `git config --get remote.origin.url` returned wrong result (https://github.com/DuoSoftware/DVP-DBModels) undefined
+39 warn `git config --get remote.origin.url` returned wrong result (https://github.com/DuoSoftware/DVP-Common) undefined
+39 warn `git config --get remote.origin.url` returned wrong result (https://github.com/DuoSoftware/DVP-Common) undefined
+40 error git clone https://github.com/DuoSoftware/DVP-DBModels undefined
+40 error git clone https://github.com/DuoSoftware/DVP-DBModels undefined
+41 error git clone https://github.com/DuoSoftware/DVP-Common undefined
+41 error git clone https://github.com/DuoSoftware/DVP-Common undefined
+42 silly lockFile 893be6d7-hub-com-DuoSoftware-DVP-DBModels https://github.com/DuoSoftware/DVP-DBModels
+43 silly lockFile 893be6d7-hub-com-DuoSoftware-DVP-DBModels https://github.com/DuoSoftware/DVP-DBModels
+44 silly lockFile 8cbbfae0-ithub-com-DuoSoftware-DVP-Common https://github.com/DuoSoftware/DVP-Common
+45 silly lockFile 8cbbfae0-ithub-com-DuoSoftware-DVP-Common https://github.com/DuoSoftware/DVP-Common
+46 error not found: git
+47 error Failed using git.
+47 error This is most likely not a problem with npm itself.
+47 error Please check if you have git installed and in your PATH.
+48 error System Windows_NT 6.2.9200
+49 error command "C:\\Program Files\\nodejs\\\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install"
+50 error cwd D:\My Projects\DVP\DVP-APPRegistry
+51 error node -v v0.10.36
+52 error npm -v 1.4.28
+53 error code ENOGIT
+54 verbose exit [ 1, true ]
