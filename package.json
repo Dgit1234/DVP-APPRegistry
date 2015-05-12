@@ -4,14 +4,14 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "DVP-Common": "DuoSoftware/DVP-Common",
-    "DVP-DBModels": "DuoSoftware/DVP-DBModels",
-    "config": "^1.12.0",
-    "cors": "^2.5.3",
+    "config": "^1.13.0",
+    "cors": "^2.6.0",
+    "DVP-Common": "^0.0.0",
+    "DVP-DBModels": "^0.0.0",
     "http": "^0.0.0",
     "open": "^0.0.5",
-    "restify": "^3.0.2",
-    "stringify": "^3.1.0"
+    "stringify": "^3.1.0",
+    "restify": "^3.0.2"
   },
   "devDependencies": {},
   "scripts": {
