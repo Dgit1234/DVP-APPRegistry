@@ -7,11 +7,11 @@ var VAPP=require('./VoiceAppManagement.js');
 var http=require('http');
 var cors = require('cors');
 var config = require('config');
-var logger=require('')
+var logger=require('DVP-Common/LogHandler').logger;
 
 var port = config.Host.port || 3000;
 var version=config.Host.version;
-var version=config.Host.version;
+//var version=config.Host.version;
 
 var RestServer = restify.createServer({
     name: "myapp",
@@ -37,7 +37,8 @@ RestServer.use(restify.queryParser());
 
 //.......................................................................................................................
 
-RestServer.post('/dvp/'+version+'/APPRegistry/AppDeveloperManagement/AddNewDeveloperRecord',function(req,res,next)
+//RestServer.post('/dvp/'+version+'/APPRegistry/AppDeveloperManagement/AddNewDeveloperRecord',function(req,res,next)
+RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/NewDeveloperRecord',function(req,res,next)
 {
    // log.info("\n.............................................Add appointment Starts....................................................\n");
     try {
