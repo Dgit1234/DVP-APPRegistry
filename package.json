@@ -1,16 +1,20 @@
 {
   "name": "DVP-APPRegistry",
   "version": "1.0.0",
+  "description": "",
   "main": "app.js",
   "dependencies": {
-    "config": "^1.13.0",
     "cors": "^2.6.0",
+    "config": "^1.13.0",
     "DVP-Common": "^0.0.0",
     "DVP-DBModels": "^0.0.0",
     "http": "^0.0.0",
     "open": "^0.0.5",
     "stringify": "^3.1.0",
-    "restify": "^3.0.2"
+    "node-uuid": "^1.4.3",
+    "restify": "^3.0.2",
+    "DVP-Common": "DuoSoftware/DVP-Common",
+    "DVP-DBModels": "DuoSoftware/DVP-DBModels"
   },
   "devDependencies": {},
   "scripts": {
