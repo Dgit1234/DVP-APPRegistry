@@ -4,6 +4,7 @@
 var DbConn = require('DVP-DBModels');
 //var messageFormatter = require('./DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 var stringify = require('stringify');
+var logger = require('DVP-Common/LogHandler.js').logger;
 
 
 
