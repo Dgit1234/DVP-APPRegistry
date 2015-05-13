@@ -8,15 +8,17 @@ var stringify = require('stringify');
 
 
 
-function AddNewDeveloperRecord(DevObj,callback)
+function AddNewDeveloperRecord(DevObj,reqId,callback)
 {
     try {
         DbConn.AppDeveloper.find({where: [{Username: DevObj.Username}]}).complete(function (err, Dobj) {
             if (err) {
+                logger.error('[DVP-APPRegistry.AppDeveloperManagement.AddNewDeveloperRecord] - [%s] - [PGSQL] - Error occurred find records of Developer %s ',reqId,DevObj.Username, err);
                 callback(err, undefined);
             }
             else {
                 if (Dobj) {
+                    logger.error('[DVP-APPRegistry.AppDeveloperManagement.AddNewDeveloperRecord] - [%s] - [PGSQL] - Developer Username %s is already taken',reqId,DevObj.Username);
                     callback('Username is Already taken', undefined);
                 }
                 else {
@@ -41,16 +43,19 @@ function AddNewDeveloperRecord(DevObj,callback)
                             {
                                 if(err)
                                 {
+                                    logger.error('[DVP-APPRegistry.AppDeveloperManagement.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record %s insertion failed',reqId,JSON.stringify(DevObj), err);
                                     callback(err,undefined);
                                 }
                                 else
                                 {
+                                    logger.debug('[DVP-APPRegistry.AppDeveloperManagement.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record insertion succeeded. Result - %s',reqId,JSON.stringify(result), err);
                                     callback(undefined,JSON.stringify(result));
                                 }
                             });
                     }
                     catch(ex)
                     {
+                        logger.error('[DVP-APPRegistry.AppDeveloperManagement.AddNewDeveloperRecord] - [%s] - [PGSQL] - Exception in insertion of New Developer record %s ',reqId,JSON.stringify(DevObj), ex);
                         callback(ex,undefined);
                     }
                 }
@@ -59,6 +64,7 @@ function AddNewDeveloperRecord(DevObj,callback)
     }
     catch(ex)
     {
+        logger.error('[DVP-APPRegistry.AppDeveloperManagement.AddNewDeveloperRecord] - [%s] - Exception in calling  method : AddNewDeveloperRecord',reqId, ex);
         callback(ex,undefined);
     }
 }
