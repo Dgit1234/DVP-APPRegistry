@@ -8,6 +8,7 @@ var DbConn = require('DVP-DBModels');
 var stringify = require('stringify');
 var open = require('open');
 var http=require('http');
+var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
 
 
 function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
