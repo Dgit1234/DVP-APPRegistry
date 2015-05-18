@@ -24,7 +24,7 @@ var RestServer = restify.createServer({
 RestServer.use(cors());
 //Server listen
 RestServer.listen(port, function () {
-    console.log('%s listening at %s', RestServer.name, RestServer.url);
+    //console.log('%s listening at %s', Host., Host.url);
 
 
 
