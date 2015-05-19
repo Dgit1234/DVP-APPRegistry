@@ -31,11 +31,11 @@ function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
                                 AppName: VAPPObj.AppName,
                                 Description: VAPPObj.Description,
                                 Url: VAPPObj.Url,
-                                CompanyId: VAPPObj.CompanyId,
-                                TenantId: VAPPObj.TenantId,
-                                ObjClass: VAPPObj.ObjClass,
-                                ObjType: VAPPObj.ObjType,
-                                ObjCategory: VAPPObj.ObjCategory,
+                                ObjClass: "OBJCLZ",
+                                ObjType: "OBJTYP",
+                                ObjCategory: "OBJCAT",
+                                CompanyId: 1,
+                                TenantId: 1,
                                 Availability:VAPPObj.Availability
 
                             }
