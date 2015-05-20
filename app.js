@@ -73,7 +73,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Develop
 
                 res.setHeader('Content-Type', "application/json");
                // res.end(err);
-                res.end(res.body);
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
             else if(resz)
             {
@@ -81,8 +83,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Develop
                 //console.log("New Developer record saving Succeeded : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 res.setHeader('Content-Type', "application/json");
-                res.send(resz);
-                res.end();
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
 
         });
@@ -93,7 +96,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Develop
        //console.log("Exception found in Add New Developer : "+ex);
         logger.error('[DVP-APPRegistry.NewDeveloperRecord] - [%s] - Exception occurred on calling method AddNewDeveloperRecord',reqId, ex);
         //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
-        res.end(ex.toString());
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
     }
     return next();
 });
@@ -127,14 +132,18 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp',f
                 //console.log("Error in Add New Voice app : "+err);
 
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
-                res.end(err.toString());
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
             else if(resz)
             {
                 //logger.debug('[DVP-APPRegistry.NewVoiceAppRecord] - [VOICEAPP] - Successfully inserted - Returns - '+resz);
                // console.log("New voice app record saving Succeeded : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
-                res.end(resz);
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
 
         });
@@ -145,7 +154,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp',f
         //console.log("Exception found in Add New Developer : "+ex);
         logger.error('[DVP-APPRegistry.NewVoiceAppRecord] - [%s] - Exception occurred on method AddNewVoiceAppRecord',reqId, ex);
         //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
-        res.end(ex.toString());
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
     }
     return next();
 });
@@ -178,7 +189,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application
                 //console.log("Error in Add New Voice app : "+err);
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
                 //logger.error('[DVP-APPRegistry.MapDeveloperAndApplication] - [VOICEAPP] - [MAP] - Error occurred on method MapDeveloperAndApplication- Records - '+JSON.stringify(req.body)+' - Error - ', err);
-                res.end(err.toString());
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
             else if(resz)
             {
@@ -186,7 +199,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
 
                 //logger.debug('[DVP-APPRegistry.MapDeveloperAndApplication] - [VOICEAPP] - [MAP] - Successfully inserted - Returns - '+resz);
-                res.end(resz);
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
 
         });
@@ -197,7 +212,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application
         //console.log("Exception found in Add New Developer : "+ex);
         //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
         logger.error('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - Exception occurred on method MapDeveloperAndApplication  : App %s Dev %s ',reqId,req.params.app,req.params.Dev, ex);
-        res.end(ex.toString());
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
     }
     return next();
 });
@@ -229,14 +246,18 @@ RestServer.del('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp/:id
                 //console.log("Error in Delete Voice app : "+err);
                 //logger.error('[DVP-APPRegistry.DeleteVoiceAppRecord] - [VOICEAPP] - Error occurred on method DeleteVoiceAppRecord- Records - '+JSON.stringify(req.body)+' - Error - ', err);
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
-                res.end(err.toString());
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.DeleteVoiceAppRecord] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
             else if(resz)
             {
                 //console.log(" voice app deletion Succeeded : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 //logger.debug('[DVP-APPRegistry.DeleteVoiceAppRecord] - [VOICEAPP] - Successfully deleted - Returns - '+resz);
-                res.end(resz.toString());
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.DeleteVoiceAppRecord] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
 
         });
@@ -247,7 +268,9 @@ RestServer.del('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp/:id
         //console.log("Exception found in Add New Developer : "+ex);
         //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
         logger.error('[DVP-APPRegistry.DeleteVoiceAppRecord] - [%s] - Exception occurred on method DeleteVoiceAppRecord : id %',reqId,req.params.id,ex);
-        res.end(ex.toString());
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.DeleteVoiceAppRecord] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
     }
     return next();
 });
@@ -280,14 +303,18 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppAva
                 //logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [VOICEAPP] - Error occurred on method ChangeVoiceAppAvailability- Records - '+JSON.stringify(req.body)+' - Error - ', err);
                 //console.log("Error in Availability change of  Voice app : "+err);
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
-                res.end(err.toString());
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
             else if(resz)
             {
                 //logger.debug('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [VOICEAPP] - Successfully changed - Returns - '+resz);
                // console.log(" voice app availability changed : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
-                res.end(resz.toString());
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
 
         });
@@ -298,7 +325,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppAva
         //console.log("Exception found in Add New Developer : "+ex);
         //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
         logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - Exception occurred on method ChangeVoiceAppAvailability App %s others %s',reqId,req.params.id,JSON.stringify(req),ex);
-        res.end(ex.toString());
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
     }
     return next();
 });
@@ -331,14 +360,18 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppUrl
                 //console.log("Error in URL change of  Voice app : "+err);
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
                 //logger.error('[DVP-APPRegistry.VoiceAppUrlModification] - [VOICEAPP] - Error occurred on method VoiceAppUrlModification- Records - '+JSON.stringify(req.body)+' - Error - ', err);
-                res.end(err.toString());
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.VoiceAppUrlModification] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
             else if(resz)
             {
                 //console.log(" voice app URL changed : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 //logger.debug('[DVP-APPRegistry.VoiceAppUrlModification] - [VOICEAPP] - Successfully updated - Returns - '+resz);
-                res.end(resz.toString());
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.VoiceAppUrlModification] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
 
         });
@@ -349,7 +382,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppUrl
         //console.log("Exception found in Add New Developer : "+ex);
         //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
         logger.error('[DVP-APPRegistry.VoiceAppUrlModification] - [%s] - Exception occurred on method VoiceAppUrlModification Inputs - Id %s other %s',reqId,req.params.id,JSON.stringify(req.body),ex);
-        res.end(ex.toString());
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.VoiceAppUrlModification] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
     }
     return next();
 });
@@ -384,14 +419,18 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/URLCheckout
                 //console.log("Error in URL change of  Voice app : "+err);
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
                 //logger.error('[DVP-APPRegistry.CheckoutURL] - [VOICEAPP] - Error occurred on method UrlChecker- Records - '+JSON.stringify(req.body)+' - Error - ', err);
-                res.end(err.toString());
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.CheckoutURL] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
             else if(resz)
             {
                 //console.log(" voice app URL Checked, Status code : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 //logger.debug('[DVP-APPRegistry.CheckoutURL] - [VOICEAPP] - Successive response returned  - Returns - '+resz);
-                res.end(resz.toString());
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.CheckoutURL] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
 
         });
@@ -403,7 +442,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/URLCheckout
         //console.log("Exception found in Add New Developer : "+ex);
         //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
         logger.error('[DVP-APPRegistry.CheckoutURL] - [VOICEAPP] - Exception occurred on method UrlChecker - Inputs - id %s others %s',reqId,req.params.id,JSON.stringify(req.body), ex);
-        res.end(ex.toString());
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.CheckoutURL] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
     }
     return next();
 });
@@ -437,14 +478,18 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppReco
                 //console.log("Error in Searching Voice apps : "+err);
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
                 //logger.error('[DVP-APPRegistry.AllVoiceAppRecordsOfDeveloper] - [VOICEAPP] - Error occurred on method FindAllVoiceAppRecords - Records - '+JSON.stringify(req.params.DevID)+' - Error - ', err);
-                res.end(err.toString());
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.AllVoiceAppRecordsOfDeveloper] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
             else if(resz)
             {
                 //console.log("Result : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 //logger.debug('[DVP-APPRegistry.AllVoiceAppRecordsOfDeveloper] - [VOICEAPP] - Successfully data returns - '+resz);
-                res.end(resz);
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.AllVoiceAppRecordsOfDeveloper] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
 
         });
@@ -456,7 +501,9 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppReco
         //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
 
         logger.error('[DVP-APPRegistry.AllVoiceAppRecordsOfDeveloper] - [%s] - Exception occurred on method FindAllVoiceAppRecords', ex);
-        res.end(ex.toString());
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.AllVoiceAppRecordsOfDeveloper] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
     }
     return next();
 });
@@ -488,14 +535,18 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppReco
                 //console.log("Error in Searching Voice apps : "+err);
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
                 logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [VOICEAPP] - Error occurred on method FindVoiceAppRecordByID - Records - AppID : '+req.params.VID+' Developer : '+req.params.DevID+' - Error - ', err);
-                res.end(err.toString());
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
             else if(resz)
             {
                 //console.log("Result : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [VOICEAPP] - Record found - Returns - '+resz);
-                res.end(resz);
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
             }
 
         });
@@ -506,7 +557,9 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppReco
         //console.log("Exception found in searching Voice App records for id : "+req.body.id+" Exception : "+ex);
         //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
         logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - Exception occurred on method VoiceAppByIdAndDeveloperID',reqId, ex);
-        res.end(ex.toString());
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
     }
     return next();
 });
