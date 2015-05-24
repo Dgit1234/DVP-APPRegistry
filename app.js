@@ -11,6 +11,7 @@ var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
 var uuid=require('node-uuid');
 var port = config.Host.port || 3000;
 var version=config.Host.version;
+var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 //var version=config.Host.version;
 
 var RestServer = restify.createServer({
@@ -24,9 +25,7 @@ var RestServer = restify.createServer({
 RestServer.use(cors());
 //Server listen
 RestServer.listen(port, function () {
-    //console.log('%s listening at %s', Host., Host.url);
-
-
+    console.log('%s listening at %s', RestServer.name, RestServer.url);
 
 });
 

@@ -9,6 +9,7 @@ var stringify = require('stringify');
 var open = require('open');
 var http=require('http');
 var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
+var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
 
 function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
@@ -149,7 +150,7 @@ function FindAllVoiceAppRecords(VAPPObj,reqId,callback)
                 }
                 else{
                     logger.error('[DVP-APPRegistry.AllVoiceAppRecordsOfDeveloper] - [%s] - [PGSQL] -No application records found of Application Developer %s ',reqId,VAPPObj);
-                    callback("No record Found",undefined);
+                    callback(new Error("No record Found"),undefined);
                 }
             }
 
@@ -181,7 +182,7 @@ function FindVoiceAppRecordByID(VID,DEVID,reqId,callback)
                 }
                 else{
                     logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - No record found for Application %s by Developer %s ',reqId,VID,DEVID);
-                    callback("No record Found",undefined);
+                    callback(new Error("No record Found"),undefined);
                 }
             }
 
@@ -226,7 +227,7 @@ function DeleteVoiceAppRecord(AppId,reqId,callback)
                 else
                 {
                     logger.error('[DVP-APPRegistry.DeleteVoiceAppRecord] - [%s] - [PGSQL] - No record found for Application %s ',reqId,AppId);
-                    callback("No record found",undefined);
+                    callback(new Error("No record Found"),undefined);
                 }
             }
         });
@@ -268,7 +269,7 @@ function ChangeVoiceAppAvailability(AppId,VAPPObj,reqId,callback)
                         }).error(function (errz) {
                             //console.log("Availability updation failed");
                             logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - Error occurred while changing Availability to %s of Application %s developed by %s',reqId,VAPPObj.Availability,AppId,VAPPObj.DevID, errz);
-                            callback("Error Found : "+errz,undefined);
+                            callback(errz,undefined);
 
                         });
 
@@ -276,7 +277,7 @@ function ChangeVoiceAppAvailability(AppId,VAPPObj,reqId,callback)
                 else
                 {
                     logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - No record found for the Application %s developed by %s',reqId,VAPPObj.Availability,AppId,VAPPObj.DevID, errz);
-                    callback('No record found',undefined);
+                    callback(new Error("No record Found"),undefined);
                 }
             }
         });
@@ -316,7 +317,7 @@ function VoiceAppUrlModification(AppId,VAPPObj,reqId,callback)
                         }).error(function (errz) {
                             //console.log("URL updation failed");
                             logger.error('[DVP-APPRegistry.VoiceAppUrlModification] - [%s] - [PGSQL] - Url updating is failed of Application %s' ,reqId,AppId, errz);
-                            callback("Error Found : "+errz,undefined);
+                            callback(errz,undefined);
 
                         });
 
@@ -324,7 +325,7 @@ function VoiceAppUrlModification(AppId,VAPPObj,reqId,callback)
                 else
                 {
                     logger.error('[DVP-APPRegistry.VoiceAppUrlModification] - [%s] - [PGSQL] - No record found for Application %s' ,reqId,AppId);
-                    callback('No record found',undefined);
+                    callback(new Error("No record Found"),undefined);
                 }
             }
         });
@@ -379,7 +380,7 @@ function UrlChecker(AppId,VAPPObj,reqId,callback)
                 else
                 {
                     logger.error('[DVP-APPRegistry.CheckoutURL] - [%s] - [PGSQL] - No record found for Application %s ',reqId,AppId);
-                    callback("No rec",undefined);
+                    callback(new Error("No record Found"),undefined);
                 }
             }
 
