@@ -22,8 +22,14 @@ var RestServer = restify.createServer({
 
 });
 
+//restify.CORS.ALLOW_HEADERS.push('Accept-Encoding');
+//restify.CORS.ALLOW_HEADERS.push('Accept-Language');
+
+//RestServer.use(restify.CORS());
 RestServer.use(cors());
+RestServer.use(restify.fullResponse());
 //Server listen
+
 RestServer.listen(port, function () {
     console.log('%s listening at %s', RestServer.name, RestServer.url);
 
@@ -451,6 +457,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/URLCheckout
 
 //.......................................................................................................................
 //RestServer.get('/dvp/'+version+'/APPRegistry/VoiceAppManagement/FindAllVoiceAppRecords/:DevID',function(req,res,next)
+//RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppRecordsOfDeveloper/:DevID',function(req,res,next)
 RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppRecordsOfDeveloper/:DevID',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
