@@ -393,6 +393,62 @@ function UrlChecker(AppId,VAPPObj,reqId,callback)
     }
 }
 
+function SetMasterApp(AppId,MasterId,reqId,callback)
+{
+    try
+    {
+        DbConn.Application.find({where: [{id: AppId}]}).complete(function (errA, Aobj) {
+            if(errA)
+            {
+                callback(errA,undefined);
+            }
+            else
+            {
+                if(Aobj!=null)
+                {
+
+                        DbConn.Application.find({where: [{id: MasterId}]}).complete(function (errM, Mobj)
+                        {
+                            if(errM)
+                            {
+                                callback(errM,undefined);
+
+                            }
+                            else
+                            {
+                                if(Mobj!=null)
+                                {
+                                    Aobj.setMasterApplication(Mobj).complete(function(errMap,ResMap)
+                                    {
+                                        if(errMap)
+                                        {
+                                            callback(errMap,undefined);
+                                        }
+                                        else
+                                        {
+                                            callback(undefined,ResMap);
+                                        }
+                                    });
+                                }
+                            }
+
+                        });
+
+                }
+
+                else
+                {
+                    callback(new Error("Empty"),undefined);
+                }
+            }
+        });
+    }
+    catch(ex)
+    {
+        callback(ex,undefined);
+    }
+
+}
 
 
 module.exports.AddNewVoiceAppRecord = AddNewVoiceAppRecord;
@@ -403,4 +459,5 @@ module.exports.DeleteVoiceAppRecord = DeleteVoiceAppRecord;
 module.exports.ChangeVoiceAppAvailability = ChangeVoiceAppAvailability;
 module.exports.VoiceAppUrlModification = VoiceAppUrlModification;
 module.exports.UrlChecker = UrlChecker;
+module.exports.SetMasterApp = SetMasterApp;
 
