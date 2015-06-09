@@ -226,6 +226,62 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application
 //.......................................................................................................................
 //RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/DeleteVoiceAppRecord',function(req,res,next)
 //check no body
+
+RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application/:Mapp/SetAsMasterAppOf/:Capp',function(req,res,next)
+{
+    // log.info("\n.............................................Add appointment Starts....................................................\n");
+    var reqId='';
+    try {
+
+        try
+        {
+            reqId = uuid.v1();
+        }
+        catch(ex)
+        {
+
+        }
+        // log.info("Inputs : "+req.body);
+        logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,req.params.Mapp);
+        VAPP.SetMasterApp(req.params.Capp,req.params.Mapp,reqId,function(err,resz)
+        {
+
+
+            if(err)
+            {
+                //console.log("Error in Delete Voice app : "+err);
+                //logger.error('[DVP-APPRegistry.DeleteVoiceAppRecord] - [VOICEAPP] - Error occurred on method DeleteVoiceAppRecord- Records - '+JSON.stringify(req.body)+' - Error - ', err);
+                //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
+            }
+            else if(resz)
+            {
+                //console.log(" voice app deletion Succeeded : "+resz);
+                //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                //logger.debug('[DVP-APPRegistry.DeleteVoiceAppRecord] - [VOICEAPP] - Successfully deleted - Returns - '+resz);
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
+            }
+
+        });
+
+    }
+    catch(ex)
+    {
+        //console.log("Exception found in Add New Developer : "+ex);
+        //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
+        logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - Exception occurred on method DeleteVoiceAppRecord : id %',reqId,req.params.id,ex);
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
+    }
+     next();
+});
+
+
 RestServer.del('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp/:id',function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
