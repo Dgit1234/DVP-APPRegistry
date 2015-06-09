@@ -21,7 +21,7 @@ function AddNewDeveloperRecord(DevObj,reqId,callback)
             else {
                 if (Dobj) {
                     logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Developer Username %s is already taken',reqId,DevObj.Username);
-                    callback('Username is Already taken', undefined);
+                    callback(new Error('Username is Already taken'), undefined);
                 }
                 else {
                     try {
@@ -50,8 +50,8 @@ function AddNewDeveloperRecord(DevObj,reqId,callback)
                                 }
                                 else
                                 {
-                                    logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record insertion succeeded. Result - %s',reqId,JSON.stringify(result), err);
-                                    callback(undefined,JSON.stringify(result));
+                                    logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record insertion succeeded. Result - ',reqId,JSON.stringify(result));
+                                    callback(undefined,result);
                                 }
                             });
                     }

@@ -76,7 +76,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Develop
                 //var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, resz);
                // logger.error('[DVP-APPRegistry.NewDeveloperRecord] - [APPDEVELOPER] - Error occurred on method AddNewDeveloperRecord - Records - '+JSON.stringify(req.body)+' - Error - ', err);
 
-                res.setHeader('Content-Type', "application/json");
+                //res.setHeader('Content-Type', "application/json");
                // res.end(err);
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - Request response : %s ', reqId, jsonString);
@@ -87,7 +87,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Develop
                 //logger.debug('[DVP-APPRegistry.NewDeveloperRecord] - [APPDEVELOPER] - Successfully inserted - Returns - '+resz);
                 //console.log("New Developer record saving Succeeded : "+resz);
                 //var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
-                res.setHeader('Content-Type', "application/json");
+                //res.setHeader('Content-Type', "application/json");
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);

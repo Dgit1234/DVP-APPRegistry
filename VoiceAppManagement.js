@@ -23,7 +23,7 @@ function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
             else {
                 if (Aobj) {
                     logger.error('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - [PGSQL] - VioceApp Name %s is already taken',reqId,VAPPObj.AppName);
-                    callback('Username is Already taken', undefined);
+                    callback(new Error('Username is Already taken'), undefined);
                 }
                 else {
                     try {
@@ -85,7 +85,7 @@ function MapDeveloperAndApplication(App,Dev,reqId,callback)
                 if (Aobj)
                 {
                     logger.debug('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - [PGSQL] - Application details found %s ',reqId,JSON.stringify(Aobj), err);
-                    DbConn.AppDeveloper.find({where: [{id: MapObj.Devid}]}).complete(function (errz, Dobj) {
+                    DbConn.AppDeveloper.find({where: [{id: Dev}]}).complete(function (errz, Dobj) {
                         if (errz)
                         {
                             logger.error('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application Developer %s ',reqId,Dev, err);
@@ -103,7 +103,7 @@ function MapDeveloperAndApplication(App,Dev,reqId,callback)
                                     }
                                     else {
                                         logger.info('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - [PGSQL] - Mapping succeeded of Application %s with Developer %s',reqId,Aobj.id,Dobj.id);
-                                        callback(undefined, "Success");
+                                        callback(undefined, MapRes);
                                     }
                                 })
                             }
@@ -276,7 +276,7 @@ function ChangeVoiceAppAvailability(AppId,VAPPObj,reqId,callback)
                 }
                 else
                 {
-                    logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - No record found for the Application %s developed by %s',reqId,VAPPObj.Availability,AppId,VAPPObj.DevID, errz);
+                    logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - No record found for the Application %s developed by %s',reqId,VAPPObj.Availability,AppId,VAPPObj.DevID);
                     callback(new Error("No record Found"),undefined);
                 }
             }
