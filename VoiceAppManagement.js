@@ -15,6 +15,8 @@ var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJ
 function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
 {
     try {
+
+        var ObjClass="";
         DbConn.Application.find({where: [{AppName: VAPPObj.AppName}]}).complete(function (err, Aobj) {
             if (err) {
                 logger.error('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, err);
@@ -27,14 +29,24 @@ function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
                 }
                 else {
                     try {
+                        if(VAPPObj.IsDeveloper)
+                        {
+                            ObjClass="DEVELOPER"
+                        }
+                        else
+                        {
+                            ObjClass="SYSTEM"
+                        }
+
+
                         DbConn.Application.create(
                             {
                                 AppName: VAPPObj.AppName,
                                 Description: VAPPObj.Description,
                                 Url: VAPPObj.Url,
-                                ObjClass: VAPPObj.ObjClass,
-                                ObjType: VAPPObj.ObjType,
-                                ObjCategory: VAPPObj.ObjCategory,
+                                ObjClass: ObjClass,
+                                ObjType: VAPPObj.Protocol,
+                                ObjCategory: "",
                                 CompanyId: 1,
                                 TenantId: 1,
                                 Availability:VAPPObj.Availability
@@ -407,7 +419,7 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
                 if(Aobj!=null)
                 {
 
-                        DbConn.Application.find({where: [{id: MasterId}]}).complete(function (errM, Mobj)
+                        DbConn.Application.find({where: [{id: MasterId},{ObjClass:"SYSTEM"}]}).complete(function (errM, Mobj)
                         {
                             if(errM)
                             {
@@ -430,6 +442,10 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
                                         }
                                     });
                                 }
+                                else
+                                {
+                                    callback(new Error("Invalid Master AppID"),undefined);
+                                }
                             }
 
                         });
@@ -438,7 +454,7 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
 
                 else
                 {
-                    callback(new Error("Empty"),undefined);
+                    callback(new Error("No child Application Found"),undefined);
                 }
             }
         });
