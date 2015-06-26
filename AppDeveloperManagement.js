@@ -13,13 +13,13 @@ var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJ
 function AddNewDeveloperRecord(DevObj,reqId,callback)
 {
     try {
-        DbConn.AppDeveloper.find({where: [{Username: DevObj.Username}]}).complete(function (err, Dobj) {
-            if (err) {
-                logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Error occurred find records of Developer %s ',reqId,DevObj.Username, err);
-                callback(err, undefined);
+        DbConn.AppDeveloper.find({where: [{Username: DevObj.Username}]}).complete(function (errDev, resDev) {
+            if (errDev) {
+                logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Error occurred find records of Developer %s ',reqId,DevObj.Username, errDev);
+                callback(errDev, undefined);
             }
             else {
-                if (Dobj) {
+                if (resDev) {
                     logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Developer Username %s is already taken',reqId,DevObj.Username);
                     callback(new Error('Username is Already taken'), undefined);
                 }
@@ -40,18 +40,18 @@ function AddNewDeveloperRecord(DevObj,reqId,callback)
                                 RefId:DevObj.RefId,
                                 Availability:DevObj.Availability
                             }
-                        ).complete(function(err,result)
+                        ).complete(function(errDevSave,resDevSave)
 
                             {
-                                if(err)
+                                if(errDevSave)
                                 {
-                                    logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record %s insertion failed',reqId,JSON.stringify(DevObj), err);
-                                    callback(err,undefined);
+                                    logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record %s insertion failed',reqId,JSON.stringify(DevObj), errDevSave);
+                                    callback(errDevSave,undefined);
                                 }
                                 else
                                 {
-                                    logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record insertion succeeded. Result - ',reqId,JSON.stringify(result));
-                                    callback(undefined,result);
+                                    logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record insertion succeeded. Result - ',reqId,JSON.stringify(resDevSave));
+                                    callback(undefined,resDevSave);
                                 }
                             });
                     }
