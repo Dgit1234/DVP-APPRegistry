@@ -39,7 +39,7 @@ RestServer.use(restify.queryParser());
 //.......................................................................................................................
 
 //RestServer.post('/dvp/'+version+'/APPRegistry/AppDeveloperManagement/AddNewDeveloperRecord',function(req,res,next)
-RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Developer',function(req,res,next)
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,next)
 {
 
     var reqId='';
@@ -93,7 +93,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Develop
 //.......................................................................................................................
 
 //RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/AddNewVoiceAppRecord',function(req,res,next)
-RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp',function(req,res,next)
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,next)
 {
     var reqId='';
     try {
@@ -140,7 +140,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp',f
 //.......................................................................................................................
 //RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/MapDeveloperAndApplication',function(req,res,next)
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application/:AppID/MapWithDeveloper/:DevID',function(req,res,next)
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDeveloper/:DevID',function(req,res,next)
 {
     var reqId='';
     try {
@@ -186,7 +186,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application
 //.......................................................................................................................
 //RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/DeleteVoiceAppRecord',function(req,res,next)
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application/:MAppID/SetAsMasterAppOf/:CAppID',function(req,res,next)
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMasterApp/:MAppID',function(req,res,next)
 {
     var reqId='';
     try {
@@ -234,7 +234,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application
 });
 
 
-RestServer.del('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp/:id',function(req,res,next)
+RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',function(req,res,next)
 {
     var reqId='';
     try {
@@ -283,7 +283,7 @@ RestServer.del('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp/:id
 //.......................................................................................................................
 //RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/ChangeVoiceAppAvailability',function(req,res,next)
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppAvailability/:id',function(req,res,next)
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:status',function(req,res,next)
 {
     var reqId='';
     try {
@@ -298,7 +298,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppAva
         }
     logger.debug('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [HTTP] - Request Received - Inputs -App %s others %s',reqId,req.params.id,JSON.stringify(req.body));
 
-        VAPP.ChangeVoiceAppAvailability(req.params.id,req.body,reqId,function(err,resz)
+        VAPP.ChangeVoiceAppAvailability(req.params.id,req.params.status,reqId,function(err,resz)
         {
 
 
@@ -334,7 +334,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppAva
 //RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppUrlModification',function(req,res,next)
 
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppUrlModification/:AppID',function(req,res,next)
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',function(req,res,next)
 {
     var reqId='';
     try {
@@ -381,7 +381,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppUrl
 //.......................................................................................................................
 //RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/URLtest',function(req,res,next)
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/URLCheckout/:AppID',function(req,res,next)
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',function(req,res,next)
 {
 
     var reqId='';
@@ -434,7 +434,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/URLCheckout
 //.......................................................................................................................
 
 //RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppRecordsOfDeveloper/:DevID',function(req,res,next)
-RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppRecordsOfDeveloper/:DevID',function(req,res,next)
+RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:DevID',function(req,res,next)
 {
     var reqId='';
     try {
@@ -482,7 +482,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppReco
 
 //.......................................................................................................................
 //RestServer.get('/dvp/'+version+'/APPRegistry/VoiceAppManagement/FindVoiceAppRecordForID/:VID/:DevID',function(req,res,next)
-RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppRecordOf/:VID/DevelopedBy/:DevID',function(req,res,next)
+RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',function(req,res,next)
 {
     var reqId='';
     try {
@@ -495,15 +495,15 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppReco
         {
 
         }
-        logger.debug('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [HTTP] - Request received - Inputs - AppID : $s Developer : %s',reqId,req.params.VID,req.params.DevID);
-        VAPP.FindVoiceAppRecordByID(req.params.VID,req.params.DevID,reqId,function(err,resz)
+        logger.debug('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [HTTP] - Request received - Inputs - AppID : $s Developer : %s',reqId,req.params.VID);
+        VAPP.FindVoiceAppRecordByID(req.params.VID,reqId,function(err,resz)
         {
 
 
             if(err)
             {
 
-                logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [VOICEAPP] - Error occurred on method FindVoiceAppRecordByID - Records - AppID : '+req.params.VID+' Developer : '+req.params.DevID+' - Error - ', err);
+                logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [VOICEAPP] - Error occurred on method FindVoiceAppRecordByID - Records - AppID : '+req.params.VID+' - Error - ', err);
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
@@ -522,8 +522,6 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppReco
     }
     catch(ex)
     {
-        //console.log("Exception found in searching Voice App records for id : "+req.body.id+" Exception : "+ex);
-        //var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, res);
         logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - Exception occurred on method VoiceAppByIdAndDeveloperID',reqId, ex);
         var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
         logger.debug('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - Request response : %s ', reqId, jsonString);

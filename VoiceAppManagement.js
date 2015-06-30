@@ -178,21 +178,21 @@ function FindAllVoiceAppRecords(VAPPObj,reqId,callback)
 function FindVoiceAppRecordByID(VID,DEVID,reqId,callback)
 {
     try{
-        DbConn.Application.find({where: [{id: VID},{AppDeveloperId:DEVID}]}).complete(function (errApp, resApp) {
+        DbConn.Application.find({where: [{id: VID}]}).complete(function (errApp, resApp) {
 
             if(errApp)
             {
-                logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - Error occurred while searching Application %s by Developer %s ',reqId,VID,DEVID, errApp);
+                logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - Error occurred while searching Application %s by Developer %s ',reqId,VID, errApp);
                 callback(errApp,undefined);
             }
             else
             {
                 if(resApp) {
-                    logger.info('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - Record found for Application %s by Developer %s ',reqId,VID,DEVID);
+                    logger.info('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - Record found for Application %s by Developer %s ',reqId,VID);
                     callback(undefined, JSON.stringify(resApp));
                 }
                 else{
-                    logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - No record found for Application %s by Developer %s ',reqId,VID,DEVID);
+                    logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - No record found for Application %s by Developer %s ',reqId,VID);
                     callback(new Error("No record Found"),undefined);
                 }
             }
@@ -242,33 +242,33 @@ function DeleteVoiceAppRecord(AppId,reqId,callback)
     }
 }
 
-function ChangeVoiceAppAvailability(AppId,VAPPObj,reqId,callback)
+function ChangeVoiceAppAvailability(AppId,status,reqId,callback)
 {
     try
     {
-        DbConn.Application.find({where: [{id: AppId},{AppDeveloperId:VAPPObj.DevID}]}).complete(function (errApp, resApp) {
+        DbConn.Application.find({where: [{id: AppId}]}).complete(function (errApp, resApp) {
             if(errApp)
             {
-                logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s developed by %s',reqId,AppId,VAPPObj.DevID, errApp);
+                logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,AppId, errApp);
                 callback(errApp,undefined);
             }
             else
             {
                 if(resApp)
                 {
-                    logger.info('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - Application %s developed by %s is found',reqId,AppId,VAPPObj.DevID);
+                    logger.info('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - Application %s is found',reqId,AppId);
                     resApp.update(
                         {
-                            Availability: VAPPObj.Availability
+                            Availability: status
 
                         }
                     ).then(function (resUpdate) {
 
-                            logger.info('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - Availability is changed to %s of Application %s developed by %s is found',reqId,VAPPObj.Availability,AppId,VAPPObj.DevID);
+                            logger.info('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - Availability is changed to %s of Application %s is found',reqId,status,AppId);
                             callback(undefined, JSON.stringify(resUpdate));
 
                         }).error(function (errUpdate) {
-                            logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - Error occurred while changing Availability to %s of Application %s developed by %s',reqId,VAPPObj.Availability,AppId,VAPPObj.DevID, errUpdate);
+                            logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - Error occurred while changing Availability to %s of Application %s',reqId,status, errUpdate);
                             callback(errUpdate,undefined);
 
                         });
@@ -276,7 +276,7 @@ function ChangeVoiceAppAvailability(AppId,VAPPObj,reqId,callback)
                 }
                 else
                 {
-                    logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - No record found for the Application %s developed by %s',reqId,VAPPObj.Availability,AppId,VAPPObj.DevID);
+                    logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [PGSQL] - No record found for the Application %s',reqId,status,AppId);
                     callback(new Error("No record Found"),undefined);
                 }
             }
@@ -284,7 +284,7 @@ function ChangeVoiceAppAvailability(AppId,VAPPObj,reqId,callback)
     }
     catch(ex)
     {
-        logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - Exception occurred when calling method : ChangeVoiceAppAvailability',reqId,VAPPObj.AvailabilityAppId,VAPPObj.DevID, errz);
+        logger.error('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - Exception occurred when calling method : ChangeVoiceAppAvailability %s',reqId,status, ex);
         callback(ex,undefined);
     }
 }
