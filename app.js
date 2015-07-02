@@ -57,7 +57,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,ne
        // log.info("Inputs : "+req.body);
         logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [HTTP] - Request Received  - Inputs - %s ',reqId,JSON.stringify(req.body));
 
-        Developer.AddNewDeveloperRecord(req.body,reqId,function(err,resz)
+        Developer.CreateDeveloper(req.body,reqId,function(err,resz)
         {
 
 
@@ -107,7 +107,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,
 
         }
         logger.debug('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,JSON.stringify(req.body));
-        VAPP.AddNewVoiceAppRecord(req.body,reqId,function(err,resz)
+        VAPP.CreateVoiceApplication(req.body,reqId,function(err,resz)
         {
 
 
@@ -154,7 +154,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDev
 
         }
         logger.debug('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - [HTTP]  - Request Received - Inputs - App %s Dev %s ',reqId,req.params.AppID,req.params.DevID);
-        VAPP.MapDeveloperAndApplication(req.params.AppID,req.params.DevID,reqId,function(err,resz)
+        VAPP.AssignApplicationToDeveloper(req.params.AppID,req.params.DevID,reqId,function(err,resz)
         {
 
 
@@ -248,7 +248,7 @@ RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',function(req,r
 
         }
         logger.debug('[DVP-APPRegistry.DeleteVoiceAppRecord] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,req.params.id);
-        VAPP.DeleteVoiceAppRecord(req.params.id,reqId,function(err,resz)
+        VAPP.DeleteApplication(req.params.id,reqId,function(err,resz)
         {
 
 
@@ -298,7 +298,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:stat
         }
     logger.debug('[DVP-APPRegistry.ChangeVoiceAppAvailability] - [%s] - [HTTP] - Request Received - Inputs -App %s others %s',reqId,req.params.id,JSON.stringify(req.body));
 
-        VAPP.ChangeVoiceAppAvailability(req.params.id,req.params.status,reqId,function(err,resz)
+        VAPP.ActivateApplication(req.params.id,req.params.status,reqId,function(err,resz)
         {
 
 
@@ -348,7 +348,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',functi
 
         }
         logger.debug('[DVP-APPRegistry.VoiceAppUrlModification] - [%s] - [HTTP] - Request Received - Inputs - Id %s other %s',reqId,req.params.AppID,JSON.stringify(req.body));
-        VAPP.VoiceAppUrlModification(req.params.AppID,req.body,reqId,function(err,resz)
+        VAPP.ModifyApplicationURL(req.params.AppID,req.body,reqId,function(err,resz)
         {
 
 
@@ -399,7 +399,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',funct
 
 
 
-        VAPP.UrlChecker(req.params.AppID,req.body,reqId,function(err,resz)
+        VAPP.TestApplication(req.params.AppID,req.body,reqId,function(err,resz)
         {
 
 
@@ -449,7 +449,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:DevID',function(r
         }
     logger.debug('[DVP-APPRegistry.AllVoiceAppRecordsOfDeveloper] - [%s] - [HTTP] - Request received - Inputs - %s',reqId,req.params.DevID);
 
-        VAPP.FindAllVoiceAppRecords(req.params.DevID,reqId,function(err,resz)
+        VAPP.PickDeveloperApplications(req.params.DevID,reqId,function(err,resz)
         {
 
 

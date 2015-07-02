@@ -10,7 +10,7 @@ var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJ
 
 
 
-function AddNewDeveloperRecord(DevObj,reqId,callback)
+function CreateDeveloper(DevObj,reqId,callback)
 {
     try {
         DbConn.AppDeveloper.find({where: [{Username: DevObj.Username}]}).complete(function (errDev, resDev) {
@@ -66,9 +66,9 @@ function AddNewDeveloperRecord(DevObj,reqId,callback)
     }
     catch(ex)
     {
-        logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - Exception in calling  method : AddNewDeveloperRecord',reqId, ex);
+        logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - Exception in calling  method : CreateDeveloper',reqId, ex);
         callback(ex,undefined);
     }
 }
 
-module.exports.AddNewDeveloperRecord = AddNewDeveloperRecord;
+module.exports.CreateDeveloper = CreateDeveloper;

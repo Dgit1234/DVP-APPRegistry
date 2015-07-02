@@ -12,7 +12,7 @@ var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
 var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
 
-function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
+function CreateVoiceApplication(VAPPObj,reqId,callback)
 {
     try {
 
@@ -78,12 +78,12 @@ function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
     }
     catch(ex)
     {
-        logger.error('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - Exception occurred when calling  method : AddNewVoiceAppRecord',reqId, ex);
+        logger.error('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - Exception occurred when calling  method : CreateVoiceApplication',reqId, ex);
         callback(ex,undefined);
     }
 }
 
-function MapDeveloperAndApplication(App,Dev,reqId,callback)
+function AssignApplicationToDeveloper(App,Dev,reqId,callback)
 {
     try{
         DbConn.Application.find({where: [{id: App}]}).complete(function (errApp, resApp) {
@@ -138,12 +138,12 @@ function MapDeveloperAndApplication(App,Dev,reqId,callback)
     }
     catch(ex)
     {
-        logger.error('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - Exception occurred when calling  method : MapDeveloperAndApplication',reqId, ex);
+        logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - Exception occurred when calling  method : MapDeveloperAndApplication',reqId, ex);
         callback(ex,undefined);
     }
 }
 
-function FindAllVoiceAppRecords(VAPPObj,reqId,callback)
+function PickDeveloperApplications(VAPPObj,reqId,callback)
 {
     try{
         DbConn.Application.findAll({where: [{AppDeveloperId: VAPPObj}]}).complete(function (errApp, resApp) {
@@ -207,7 +207,7 @@ function FindVoiceAppRecordByID(VID,DEVID,reqId,callback)
     }
 }
 
-function DeleteVoiceAppRecord(AppId,reqId,callback)
+function DeleteApplication(AppId,reqId,callback)
 {
     try
     {
@@ -242,7 +242,7 @@ function DeleteVoiceAppRecord(AppId,reqId,callback)
     }
 }
 
-function ChangeVoiceAppAvailability(AppId,status,reqId,callback)
+function ActivateApplication(AppId,status,reqId,callback)
 {
     try
     {
@@ -289,7 +289,7 @@ function ChangeVoiceAppAvailability(AppId,status,reqId,callback)
     }
 }
 
-function VoiceAppUrlModification(AppId,VAPPObj,reqId,callback)
+function ModifyApplicationURL(AppId,VAPPObj,reqId,callback)
 {
     try
     {
@@ -336,7 +336,7 @@ function VoiceAppUrlModification(AppId,VAPPObj,reqId,callback)
     }
 }
 
-function UrlChecker(AppId,VAPPObj,reqId,callback)
+function TestApplication(AppId,VAPPObj,reqId,callback)
 {
     try
     {
@@ -385,7 +385,7 @@ function UrlChecker(AppId,VAPPObj,reqId,callback)
     }
     catch(ex)
     {
-        logger.error('[DVP-APPRegistry.VoiceAppUrlModification] - [%s] - [PGSQL] - Exception occurred when calling method : UrlChecker' ,reqId,ex);
+        logger.error('[DVP-APPRegistry.VoiceAppUrlModification] - [%s] - [PGSQL] - Exception occurred when calling method : TestApplication' ,reqId,ex);
         callback(ex,err);
     }
 }
@@ -397,6 +397,7 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
         DbConn.Application.find({where: [{id: AppId}]}).complete(function (errCApp, resCApp) {
             if(errCApp)
             {
+                logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Error found in searching Application %s ',reqId,AppId,errCApp);
                 callback(errCApp,undefined);
             }
             else
@@ -408,6 +409,7 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
                         {
                             if(errMaster)
                             {
+                                logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Error found in searching Master Application %s of Object class = SYSTEM ',reqId,MasterId,errMaster);
                                 callback(errMaster,undefined);
 
                             }
@@ -419,16 +421,19 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
                                     {
                                         if(errMap)
                                         {
+                                            logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Error searching Master Application %s of Object class = SYSTEM ',reqId,MasterId,errMaster);
                                             callback(errMap,undefined);
                                         }
                                         else
                                         {
+                                            logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Assign succeeded of Application %s and Master Application %s ',reqId,AppId,MasterId);
                                             callback(undefined,resMap);
                                         }
                                     });
                                 }
                                 else
                                 {
+                                    logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - No record found for MAster Application %s of Object class = SYSTEM ',reqId,MasterId);
                                     callback(new Error("Invalid Master AppID"),undefined);
                                 }
                             }
@@ -439,6 +444,7 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
 
                 else
                 {
+                    logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - No record found for Child Application %s of Object class = SYSTEM ',reqId,AppId);
                     callback(new Error("No child Application Found"),undefined);
                 }
             }
@@ -446,19 +452,20 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
     }
     catch(ex)
     {
+        logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Exception in Method starting ',reqId,ex);
         callback(ex,undefined);
     }
 
 }
 
 
-module.exports.AddNewVoiceAppRecord = AddNewVoiceAppRecord;
-module.exports.MapDeveloperAndApplication = MapDeveloperAndApplication;
-module.exports.FindAllVoiceAppRecords = FindAllVoiceAppRecords;
+module.exports.CreateVoiceApplication = CreateVoiceApplication;
+module.exports.AssignApplicationToDeveloper = AssignApplicationToDeveloper;
+module.exports.PickDeveloperApplications = PickDeveloperApplications;
 module.exports.FindVoiceAppRecordByID = FindVoiceAppRecordByID;
-module.exports.DeleteVoiceAppRecord = DeleteVoiceAppRecord;
-module.exports.ChangeVoiceAppAvailability = ChangeVoiceAppAvailability;
-module.exports.VoiceAppUrlModification = VoiceAppUrlModification;
-module.exports.UrlChecker = UrlChecker;
+module.exports.DeleteApplication = DeleteApplication;
+module.exports.ActivateApplication = ActivateApplication;
+module.exports.ModifyApplicationURL = ModifyApplicationURL;
+module.exports.TestApplication = TestApplication;
 module.exports.SetMasterApp = SetMasterApp;
 
