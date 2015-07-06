@@ -15,12 +15,12 @@ function CreateDeveloper(DevObj,reqId,callback)
     try {
         DbConn.AppDeveloper.find({where: [{Username: DevObj.Username}]}).complete(function (errDev, resDev) {
             if (errDev) {
-                logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Error occurred find records of Developer %s ',reqId,DevObj.Username, errDev);
+                logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - Error occurred find records of Developer %s ',reqId,DevObj.Username, errDev);
                 callback(errDev, undefined);
             }
             else {
                 if (resDev) {
-                    logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Developer Username %s is already taken',reqId,DevObj.Username);
+                    logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - Developer Username %s is already taken',reqId,DevObj.Username);
                     callback(new Error('Username is Already taken'), undefined);
                 }
                 else {
@@ -45,19 +45,19 @@ function CreateDeveloper(DevObj,reqId,callback)
                             {
                                 if(errDevSave)
                                 {
-                                    logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record %s insertion failed',reqId,JSON.stringify(DevObj), errDevSave);
+                                    logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - New Developer record %s insertion failed',reqId,JSON.stringify(DevObj), errDevSave);
                                     callback(errDevSave,undefined);
                                 }
                                 else
                                 {
-                                    logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record insertion succeeded. Result - ',reqId,JSON.stringify(resDevSave));
+                                    logger.debug('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - New Developer record insertion succeeded. Result - ',reqId,JSON.stringify(resDevSave));
                                     callback(undefined,resDevSave);
                                 }
                             });
                     }
                     catch(ex)
                     {
-                        logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Exception in insertion of New Developer record %s ',reqId,JSON.stringify(DevObj), ex);
+                        logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - Exception in insertion of New Developer record %s ',reqId,JSON.stringify(DevObj), ex);
                         callback(ex,undefined);
                     }
                 }
@@ -66,7 +66,7 @@ function CreateDeveloper(DevObj,reqId,callback)
     }
     catch(ex)
     {
-        logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - Exception in calling  method : CreateDeveloper',reqId, ex);
+        logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - Exception in calling  method : CreateDeveloper',reqId, ex);
         callback(ex,undefined);
     }
 }
