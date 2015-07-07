@@ -14,73 +14,82 @@ var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJ
 
 function CreateVoiceApplication(VAPPObj,reqId,callback)
 {
-    try {
+    if(VAPPObj)
+    {
+        try {
 
-        var ObjClass="";
-        DbConn.Application.find({where: [{AppName: VAPPObj.AppName}]}).complete(function (errApp, resApp) {
-            if (errApp) {
-                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, errApp);
-                callback(errApp, undefined);
-            }
-            else {
-                if (resApp) {
-                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VioceApp Name %s is already taken',reqId,VAPPObj.AppName);
-                    callback(new Error('Username is Already taken'), undefined);
+            var ObjClass="";
+            DbConn.Application.find({where: [{AppName: VAPPObj.AppName}]}).complete(function (errApp, resApp) {
+                if (errApp) {
+                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, errApp);
+                    callback(errApp, undefined);
                 }
                 else {
-                    try {
-                        if(VAPPObj.IsDeveloper)
-                        {
-                            ObjClass="DEVELOPER"
-                        }
-                        else
-                        {
-                            ObjClass="SYSTEM"
-                        }
-
-
-                        DbConn.Application.create(
-                            {
-                                AppName: VAPPObj.AppName,
-                                Description: VAPPObj.Description,
-                                Url: VAPPObj.Url,
-                                ObjClass: ObjClass,
-                                ObjType: VAPPObj.Protocol,
-                                ObjCategory: "",
-                                CompanyId: 1,
-                                TenantId: 1,
-                                Availability:VAPPObj.Availability
-
-                            }
-                        ).complete(function(errAppSave,resAppSave)
-
-                            {
-                                if(errAppSave)
-                                {
-                                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record %s insertion failed',reqId,JSON.stringify(VAPPObj), errAppSave);
-                                    callback(errAppSave,undefined);
-                                }
-                                else
-                                {
-                                    logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ',reqId, errAppSave);
-                                    callback(undefined,JSON.stringify(resAppSave));
-                                }
-                            });
+                    if (resApp) {
+                        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VioceApp Name %s is already taken',reqId,VAPPObj.AppName);
+                        callback(new Error('Username is Already taken'), undefined);
                     }
-                    catch(ex)
-                    {
-                        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in insertion of New Voice App record %s ',reqId,JSON.stringify(VAPPObj), ex);
-                        callback(ex,undefined);
+                    else {
+                        try {
+                            if(VAPPObj.IsDeveloper)
+                            {
+                                ObjClass="DEVELOPER"
+                            }
+                            else
+                            {
+                                ObjClass="SYSTEM"
+                            }
+
+
+                            DbConn.Application.create(
+                                {
+                                    AppName: VAPPObj.AppName,
+                                    Description: VAPPObj.Description,
+                                    Url: VAPPObj.Url,
+                                    ObjClass: ObjClass,
+                                    ObjType: VAPPObj.Protocol,
+                                    ObjCategory: "",
+                                    CompanyId: 1,
+                                    TenantId: 1,
+                                    Availability:VAPPObj.Availability
+
+                                }
+                            ).complete(function(errAppSave,resAppSave)
+
+                                {
+                                    if(errAppSave)
+                                    {
+                                        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record %s insertion failed',reqId,JSON.stringify(VAPPObj), errAppSave);
+                                        callback(errAppSave,undefined);
+                                    }
+                                    else
+                                    {
+                                        logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ',reqId, errAppSave);
+                                        callback(undefined,JSON.stringify(resAppSave));
+                                    }
+                                });
+                        }
+                        catch(ex)
+                        {
+                            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in insertion of New Voice App record %s ',reqId,JSON.stringify(VAPPObj), ex);
+                            callback(ex,undefined);
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
+        catch(ex)
+        {
+            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Exception occurred when calling  method : CreateVoiceApplication',reqId, ex);
+            callback(ex,undefined);
+        }
     }
-    catch(ex)
+    else
     {
-        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Exception occurred when calling  method : CreateVoiceApplication',reqId, ex);
-        callback(ex,undefined);
+        callback(new Error("Empty request"),undefined);
     }
+
+
 }
 
 function AssignApplicationToDeveloper(App,Dev,reqId,callback)
@@ -145,6 +154,7 @@ function AssignApplicationToDeveloper(App,Dev,reqId,callback)
 
 function PickDeveloperApplications(VAPPObj,reqId,callback)
 {
+
     try{
         DbConn.Application.findAll({where: [{AppDeveloperId: VAPPObj}]}).complete(function (errApp, resApp) {
 
@@ -175,7 +185,7 @@ function PickDeveloperApplications(VAPPObj,reqId,callback)
     }
 }
 
-function PickApplicationRecord(VID,DEVID,reqId,callback)
+function PickApplicationRecord(VID,reqId,callback)
 {
     try{
         DbConn.Application.find({where: [{id: VID}]}).complete(function (errApp, resApp) {
@@ -291,56 +301,64 @@ function ActivateApplication(AppId,status,reqId,callback)
 
 function ModifyApplicationURL(AppId,VAPPObj,reqId,callback)
 {
-    try
+    if(VAPPObj)
     {
-        DbConn.Application.find({where: [{id: AppId},{AppDeveloperId:VAPPObj.DevID}]}).complete(function (errApp, resApp) {
-            if(errApp)
-            {
-                logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s' ,reqId,AppId, errApp);
-                callback(errApp,undefined);
-            }
-            else
-            {
-                if(resApp)
+        try
+        {
+            DbConn.Application.find({where: [{id: AppId},{AppDeveloperId:VAPPObj.DevID}]}).complete(function (errApp, resApp) {
+                if(errApp)
                 {
-                    logger.info('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Record of  Application %s is found',reqId,AppId);
-                    resApp.update(
-                        {
-                            Url: VAPPObj.Url
-
-                        }
-                    ).then(function (resUpdate) {
-
-                            logger.info('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Url of Application %s is updated to %s is succeeded',reqId,AppId,VAPPObj.Url);
-                            callback(undefined, JSON.stringify(resUpdate));
-
-                        }).error(function (errUpdate) {
-                            logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Url updating is failed of Application %s' ,reqId,AppId, errUpdate);
-                            callback(errUpdate,undefined);
-
-                        });
-
+                    logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s' ,reqId,AppId, errApp);
+                    callback(errApp,undefined);
                 }
                 else
                 {
-                    logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - No record found for Application %s' ,reqId,AppId);
-                    callback(new Error("No record Found"),undefined);
+                    if(resApp)
+                    {
+                        logger.info('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Record of  Application %s is found',reqId,AppId);
+                        resApp.update(
+                            {
+                                Url: VAPPObj.Url
+
+                            }
+                        ).then(function (resUpdate) {
+
+                                logger.info('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Url of Application %s is updated to %s is succeeded',reqId,AppId,VAPPObj.Url);
+                                callback(undefined, JSON.stringify(resUpdate));
+
+                            }).error(function (errUpdate) {
+                                logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Url updating is failed of Application %s' ,reqId,AppId, errUpdate);
+                                callback(errUpdate,undefined);
+
+                            });
+
+                    }
+                    else
+                    {
+                        logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - No record found for Application %s' ,reqId,AppId);
+                        callback(new Error("No record Found"),undefined);
+                    }
                 }
-            }
-        });
+            });
+        }
+        catch(ex)
+        {
+            logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Exception occurred when calling method : ModifyApplicationURL : id %s ' ,reqId,AppId,ex);
+            callback(ex,undefined);
+        }
     }
-    catch(ex)
+    else
     {
-        logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Exception occurred when calling method : ModifyApplicationURL : id %s ' ,reqId,AppId,ex);
-        callback(ex,undefined);
+        callback(new Error("Empty request"),undefined);
     }
+
 }
 
-function TestApplication(AppId,VAPPObj,reqId,callback)
+function TestApplication(AppId,reqId,callback)
 {
     try
     {
-        DbConn.Application.find({where: [{id: AppId},{AppDeveloperId:VAPPObj.DevID}]}).complete(function (errApp, resApp) {
+        DbConn.Application.find({where: [{id: AppId}]}).complete(function (errApp, resApp) {
 
             if(errApp)
             {

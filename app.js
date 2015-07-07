@@ -54,6 +54,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,ne
 
         }
 
+        var Company=1;
+        var Teanant=1;
+
        // log.info("Inputs : "+req.body);
         logger.debug('[DVP-APPRegistry.CreateDeveloper] - [%s] - [HTTP] - Request Received  - Inputs - %s ',reqId,JSON.stringify(req.body));
 
@@ -106,6 +109,10 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,
         {
 
         }
+
+        var Company=1;
+        var Teanant=1;
+
         logger.debug('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,JSON.stringify(req.body));
         APP.CreateVoiceApplication(req.body,reqId,function(err,resz)
         {
@@ -153,6 +160,10 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDev
         {
 
         }
+
+        var Company=1;
+        var Teanant=1;
+
         logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [HTTP]  - Request Received - Inputs - App %s Dev %s ',reqId,req.params.AppID,req.params.DevID);
         APP.AssignApplicationToDeveloper(req.params.AppID,req.params.DevID,reqId,function(err,resz)
         {
@@ -199,6 +210,10 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMaste
         {
 
         }
+
+        var Company=1;
+        var Teanant=1;
+
         logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,req.params.MAppID);
         APP.SetMasterApp(req.params.CAppID,req.params.MAppID,reqId,function(err,resz)
         {
@@ -247,6 +262,11 @@ RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',function(req,r
         {
 
         }
+
+        var Company=1;
+        var Teanant=1;
+
+
         logger.debug('[DVP-APPRegistry.DeleteApplication] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,req.params.id);
         APP.DeleteApplication(req.params.id,reqId,function(err,resz)
         {
@@ -296,6 +316,10 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:stat
         {
 
         }
+
+        var Company=1;
+        var Teanant=1;
+
     logger.debug('[DVP-APPRegistry.ActivateApplication] - [%s] - [HTTP] - Request Received - Inputs -App %s others %s',reqId,req.params.id,JSON.stringify(req.body));
 
         APP.ActivateApplication(req.params.id,req.params.status,reqId,function(err,resz)
@@ -347,6 +371,10 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',functi
         {
 
         }
+
+        var Company=1;
+        var Teanant=1;
+
         logger.debug('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [HTTP] - Request Received - Inputs - Id %s other %s',reqId,req.params.AppID,JSON.stringify(req.body));
         APP.ModifyApplicationURL(req.params.AppID,req.body,reqId,function(err,resz)
         {
@@ -399,7 +427,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',funct
 
 
 
-        APP.TestApplication(req.params.AppID,req.body,reqId,function(err,resz)
+        APP.TestApplication(req.params.AppID,reqId,function(err,resz)
         {
 
 
@@ -422,7 +450,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',funct
     }
     catch(ex)
     {
-        logger.error('[DVP-APPRegistry.TestApplication] - [VOICEAPP] - Exception occurred on method UrlChecker - Inputs - id %s others %s',reqId,req.params.AppID,JSON.stringify(req.body), ex);
+        logger.error('[DVP-APPRegistry.TestApplication] - [VOICEAPP] - Exception occurred on method UrlChecker - Inputs - id %s ',reqId,req.params.AppID, ex);
         var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
         logger.debug('[DVP-APPRegistry.TestApplication] - [%s] - Request response : %s ', reqId, jsonString);
         res.end(jsonString);
