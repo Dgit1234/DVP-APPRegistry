@@ -13,7 +13,7 @@ var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJ
 function CreateDeveloper(DevObj,reqId,callback)
 {
 
-    if(DevObj)
+    if(DevObj && DevObj.Username)
     {
         try {
             DbConn.AppDeveloper.find({where: [{Username: DevObj.Username}]}).complete(function (errDev, resDev) {
@@ -75,7 +75,7 @@ function CreateDeveloper(DevObj,reqId,callback)
     }
     else
     {
-        callback(new Error("Empty request"),undefined);
+        callback(new Error("Empty request or Developer Username is Undefined"),undefined);
     }
 
 }
