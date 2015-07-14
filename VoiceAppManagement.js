@@ -163,7 +163,7 @@ function AssignApplicationToDeveloper(App,Dev,reqId,callback)
 
 function PickDeveloperApplications(DevID,reqId,callback)
 {
-if(!isNaN(DevID))
+if(!isNaN(DevID)&&DevID)
 {
     try{
         DbConn.Application.findAll({where: [{AppDeveloperId: DevID}]}).complete(function (errApp, resApp) {
@@ -177,7 +177,7 @@ if(!isNaN(DevID))
             {
                 if(resApp.length>0) {
                     logger.info('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - [PGSQL] - Application records found which are developed by  Application Developer %s',reqId,DevID);
-                    callback(undefined, JSON.stringify(resApp));
+                    callback(undefined, resApp);
                 }
                 else{
                     logger.error('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - [PGSQL] -No application records found of Application Developer %s ',reqId,DevID);
@@ -203,7 +203,7 @@ if(!isNaN(DevID))
 
 function PickApplicationRecord(AppID,reqId,callback)
 {
-    if(!isNaN(AppID))
+    if(!isNaN(AppID)&& AppID)
     {
         try{
             DbConn.Application.find({where: [{id: AppID}]}).complete(function (errApp, resApp) {
@@ -217,7 +217,7 @@ function PickApplicationRecord(AppID,reqId,callback)
                 {
                     if(resApp) {
                         logger.info('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [PGSQL] - Record found for Application %s by Developer %s ',reqId,AppID);
-                        callback(undefined, JSON.stringify(resApp));
+                        callback(undefined, resApp);
                     }
                     else{
                         logger.error('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [PGSQL] - No record found for Application %s by Developer %s ',reqId,AppID);
@@ -244,7 +244,7 @@ function PickApplicationRecord(AppID,reqId,callback)
 
 function DeleteApplication(AppId,reqId,callback)
 {
-  if(!isNaN(AppId))
+  if(!isNaN(AppId)&&AppId)
   {
       try
       {
@@ -289,7 +289,7 @@ function DeleteApplication(AppId,reqId,callback)
 
 function ActivateApplication(AppId,status,reqId,callback)
 {
-    if(!isNaN(AppId))
+    if(!isNaN(AppId)&&AppId)
     {
         try
         {
@@ -312,7 +312,7 @@ function ActivateApplication(AppId,status,reqId,callback)
                         ).then(function (resUpdate) {
 
                                 logger.info('[DVP-APPRegistry.ActivateApplication] - [%s] - [PGSQL] - Availability is changed to %s of Application %s is found',reqId,status,AppId);
-                                callback(undefined, JSON.stringify(resUpdate));
+                                callback(undefined, resUpdate);
 
                             }).error(function (errUpdate) {
                                 logger.error('[DVP-APPRegistry.ActivateApplication] - [%s] - [PGSQL] - Error occurred while changing Availability to %s of Application %s',reqId,status, errUpdate);
@@ -345,7 +345,7 @@ function ActivateApplication(AppId,status,reqId,callback)
 
 function ModifyApplicationURL(AppId,VAPPObj,reqId,callback)
 {
-    if(!isNaN(VAPPObj))
+    if(!isNaN(AppId)&&AppId&& VAPPObj)
     {
         try
         {
@@ -368,7 +368,7 @@ function ModifyApplicationURL(AppId,VAPPObj,reqId,callback)
                         ).then(function (resUpdate) {
 
                                 logger.info('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Url of Application %s is updated to %s is succeeded',reqId,AppId,VAPPObj.Url);
-                                callback(undefined, JSON.stringify(resUpdate));
+                                callback(undefined,resUpdate);
 
                             }).error(function (errUpdate) {
                                 logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Url updating is failed of Application %s' ,reqId,AppId, errUpdate);
@@ -400,7 +400,7 @@ function ModifyApplicationURL(AppId,VAPPObj,reqId,callback)
 
 function TestApplication(AppId,reqId,callback)
 {
-    if(!isNaN(AppId))
+    if(!isNaN(AppId)&& AppId)
     {
         try
         {
@@ -475,7 +475,7 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
                 }
                 else
                 {
-                    if(resCApp!=null)
+                    if(resCApp)
                     {
 
                         DbConn.Application.find({where: [{id: MasterId},{ObjClass:"SYSTEM"}]}).complete(function (errMaster, resMaster)
@@ -488,7 +488,7 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
                             }
                             else
                             {
-                                if(resMaster!=null)
+                                if(resMaster)
                                 {
                                     resCApp.setMasterApplication(resMaster).complete(function(errMap,resMap)
                                     {
