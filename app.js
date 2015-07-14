@@ -16,12 +16,14 @@ var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJ
 var RestServer = restify.createServer({
     name: "myapp",
     version: '1.0.0'
-},function(req,res)
-{
-
 });
 
-RestServer.use(cors());
+restify.CORS.ALLOW_HEADERS.push('api_key');
+//restify.CORS.ALLOW_HEADERS.push('Access-Control-Request-Method');
+
+
+
+RestServer.use(restify.CORS());
 RestServer.use(restify.fullResponse());
 //Server listen
 
@@ -524,7 +526,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',func
 
         }
         logger.debug('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [HTTP] - Request received - Inputs - AppID : $s Developer : %s',reqId,req.params.VID);
-        APP.PickApplicationRecord(req.params.VID,reqId,function(err,resz)
+        APP.PickApplicationRecord(req.params.AppID,reqId,function(err,resz)
         {
 
 
