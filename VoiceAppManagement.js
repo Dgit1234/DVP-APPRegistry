@@ -30,50 +30,52 @@ function CreateVoiceApplication(VAPPObj,reqId,callback)
                         callback(new Error('Username is Already taken'), undefined);
                     }
                     else {
-                        try {
-                            if(VAPPObj.IsDeveloper)
-                            {
-                                ObjClass="DEVELOPER"
-                            }
-                            else
-                            {
-                                ObjClass="SYSTEM"
-                            }
 
-
-                            DbConn.Application.create(
-                                {
-                                    AppName: VAPPObj.AppName,
-                                    Description: VAPPObj.Description,
-                                    Url: VAPPObj.Url,
-                                    ObjClass: ObjClass,
-                                    ObjType: VAPPObj.Protocol,
-                                    ObjCategory: "",
-                                    CompanyId: 1,
-                                    TenantId: 1,
-                                    Availability:VAPPObj.Availability
-
+                        if(VAPPObj.ObjType=="HTTAPI"|| VAPPObj.ObjType=="SOCKET" || VAPPObj.ObjType=="EXTENDED") {
+                            try {
+                                if (VAPPObj.IsDeveloper) {
+                                    ObjClass = "DEVELOPER"
                                 }
-                            ).complete(function(errAppSave,resAppSave)
+                                else {
+                                    ObjClass = "SYSTEM"
+                                }
 
-                                {
-                                    if(errAppSave)
+
+                                DbConn.Application.create(
                                     {
-                                        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record %s insertion failed',reqId,JSON.stringify(VAPPObj), errAppSave);
-                                        callback(errAppSave,undefined);
+                                        AppName: VAPPObj.AppName,
+                                        Description: VAPPObj.Description,
+                                        Url: VAPPObj.Url,
+                                        ObjClass: ObjClass,
+                                        ObjType: VAPPObj.ObjType,
+                                        ObjCategory:VAPPObj.ObjCategory,
+                                        CompanyId: 1,
+                                        TenantId: 1,
+                                        Availability: VAPPObj.Availability
+
                                     }
-                                    else
-                                    {
-                                        logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ',reqId, errAppSave);
-                                        callback(undefined,resAppSave);
-                                    }
-                                });
+                                ).complete(function (errAppSave, resAppSave) {
+                                        if (errAppSave) {
+                                            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record %s insertion failed', reqId, JSON.stringify(VAPPObj), errAppSave);
+                                            callback(errAppSave, undefined);
+                                        }
+                                        else {
+                                            logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, errAppSave);
+                                            callback(undefined, resAppSave);
+                                        }
+                                    });
+                            }
+                            catch (ex) {
+                                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in insertion of New Voice App record %s ', reqId, JSON.stringify(VAPPObj), ex);
+                                callback(ex, undefined);
+                            }
                         }
-                        catch(ex)
+                        else
                         {
-                            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in insertion of New Voice App record %s ',reqId,JSON.stringify(VAPPObj), ex);
-                            callback(ex,undefined);
+                            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Invalid ObjectType %s ', reqId, VAPPObj.ObjType);
+                            callback(new Error("Invalid ObjectType"), undefined);
                         }
+
                     }
                 }
             })
