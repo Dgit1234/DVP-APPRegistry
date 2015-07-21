@@ -19,7 +19,81 @@ function CreateVoiceApplication(VAPPObj,reqId,callback)
         try {
 
             var ObjClass="";
-            DbConn.Application.find({where: [{AppName: VAPPObj.AppName}]}).complete(function (errApp, resApp) {
+            DbConn.Application.find({where: [{AppName: VAPPObj.AppName}]}).then(function (resApp) {
+
+                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, errApp);
+                callback(errApp, undefined);
+
+            }).catch(function (resApp) {
+
+                if (resApp) {
+                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VioceApp Name %s is already taken',reqId,VAPPObj.AppName);
+                    callback(new Error('Username is Already taken'), undefined);
+                }
+                else {
+
+                    if(VAPPObj.ObjType=="HTTAPI"|| VAPPObj.ObjType=="SOCKET" || VAPPObj.ObjType=="EXTENDED") {
+                        try {
+                            if (VAPPObj.IsDeveloper) {
+                                ObjClass = "DEVELOPER"
+                            }
+                            else {
+                                ObjClass = "SYSTEM"
+                            }
+
+
+                            DbConn.Application.create(
+                                {
+                                    AppName: VAPPObj.AppName,
+                                    Description: VAPPObj.Description,
+                                    Url: VAPPObj.Url,
+                                    ObjClass: ObjClass,
+                                    ObjType: VAPPObj.ObjType,
+                                    ObjCategory:VAPPObj.ObjCategory,
+                                    CompanyId: 1,
+                                    TenantId: 1,
+                                    Availability: VAPPObj.Availability
+
+                                }
+                            ).then(function (resAppSave) {
+
+                                    logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, errAppSave);
+                                    callback(undefined, resAppSave);
+
+                                }).catch(function (errAppSave) {
+                                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record %s insertion failed', reqId, JSON.stringify(VAPPObj), errAppSave);
+                                    callback(errAppSave, undefined);
+                                });
+
+                                /*complete(function (errAppSave, resAppSave) {
+                                    if (errAppSave) {
+                                        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record %s insertion failed', reqId, JSON.stringify(VAPPObj), errAppSave);
+                                        callback(errAppSave, undefined);
+                                    }
+                                    else {
+                                        logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, errAppSave);
+                                        callback(undefined, resAppSave);
+                                    }
+                                });*/
+                        }
+                        catch (ex) {
+                            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in insertion of New Voice App record %s ', reqId, JSON.stringify(VAPPObj), ex);
+                            callback(ex, undefined);
+                        }
+                    }
+                    else
+                    {
+                        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Invalid ObjectType %s ', reqId, VAPPObj.ObjType);
+                        callback(new Error("Invalid ObjectType"), undefined);
+                    }
+
+                }
+
+            });
+
+
+
+                /*complete(function (errApp, resApp) {
                 if (errApp) {
                     logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, errApp);
                     callback(errApp, undefined);
@@ -78,7 +152,7 @@ function CreateVoiceApplication(VAPPObj,reqId,callback)
 
                     }
                 }
-            })
+            })*/
         }
         catch(ex)
         {
@@ -99,7 +173,89 @@ function AssignApplicationToDeveloper(App,Dev,reqId,callback)
    if(!isNaN(App) && !isNaN(Dev) && App && Dev)
    {
        try{
-           DbConn.Application.find({where: [{id: App}]}).complete(function (errApp, resApp) {
+           DbConn.Application.find({where: [{id: App}]}).then(function (resApp) {
+
+               if (resApp)
+               {
+                   logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Application details found %s ',reqId,JSON.stringify(resApp), errApp);
+                   DbConn.AppDeveloper.find({where: [{id: Dev}]}).then(function (resDev) {
+
+                       if (resDev) {
+                           logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Developer details found %s ',reqId,JSON.stringify(resDev), errApp);
+                           resApp.setAppDeveloper(resDev).then(function (resMap) {
+
+                               logger.info('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Mapping succeeded of Application %s with Developer %s',reqId,resApp.id,resDev.id);
+                               callback(undefined, resMap);
+                           }).catch(function (errMap) {
+                               logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while mapping Application %s with Developer %s',reqId,resApp.id,resDev.id, errApp);
+                               callback(errMap, undefined);
+                           });
+
+                              /* complete(function (errMap, resMap) {
+                               if (errMap) {
+                                   logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while mapping Application %s with Developer %s',reqId,resApp.id,resDev.id, errApp);
+                                   callback(errMap, undefined);
+                               }
+                               else {
+                                   logger.info('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Mapping succeeded of Application %s with Developer %s',reqId,resApp.id,resDev.id);
+                                   callback(undefined, resMap);
+                               }
+                           })*/
+                       }
+                       else {
+                           logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - No record found for Application Developer %s ',reqId,Dev);
+                           callback(new Error("No record found for AppDevelopers : "+Dev),undefined);
+                       }
+
+                   }).catch(function (errDev) {
+                       logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while searching for records of Application Developer %s ',reqId,Dev, errApp);
+                       callback(errApp, undefined);
+                   });
+
+
+                       /*complete(function (errDev, resDev) {
+                       if (errDev)
+                       {
+                           logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while searching for records of Application Developer %s ',reqId,Dev, errApp);
+                           callback(errApp, undefined)
+
+                       }
+                       else {
+                           if (resDev) {
+                               logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Developer details found %s ',reqId,JSON.stringify(resDev), errApp);
+                               resApp.setAppDeveloper(resDev).complete(function (errMap, resMap) {
+                                   if (errMap) {
+                                       logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while mapping Application %s with Developer %s',reqId,resApp.id,resDev.id, errApp);
+                                       callback(errMap, undefined);
+                                   }
+                                   else {
+                                       logger.info('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Mapping succeeded of Application %s with Developer %s',reqId,resApp.id,resDev.id);
+                                       callback(undefined, resMap);
+                                   }
+                               })
+                           }
+                           else {
+                               logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - No record found for Application Developer %s ',reqId,Dev);
+                               callback(new Error("No record found for AppDevelopers : "+Dev),undefined);
+                           }
+                       }
+
+                   });*/
+               }
+               else
+               {
+                   logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - No record found for Application  %s ',reqId,App);
+                   callback(new Error("No record found for Application : "+App),undefined);
+               }
+
+           }).catch(function (errApp) {
+               logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,App, errApp);
+               callback(errApp,undefined);
+           });
+
+
+
+              /* complete(function (errApp, resApp) {
 
                if(errApp)
                {
@@ -147,7 +303,7 @@ function AssignApplicationToDeveloper(App,Dev,reqId,callback)
                }
 
 
-           });
+           });*/
        }
        catch(ex)
        {
@@ -168,7 +324,27 @@ function PickDeveloperApplications(DevID,reqId,callback)
 if(!isNaN(DevID)&&DevID)
 {
     try{
-        DbConn.Application.findAll({where: [{AppDeveloperId: DevID}]}).complete(function (errApp, resApp) {
+        DbConn.Application.findAll({where: [{AppDeveloperId: DevID}]}).then(function (resApp) {
+
+            if(resApp.length>0) {
+                logger.info('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - [PGSQL] - Application records found which are developed by  Application Developer %s',reqId,DevID);
+                callback(undefined, resApp);
+            }
+            else{
+                logger.error('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - [PGSQL] -No application records found of Application Developer %s ',reqId,DevID);
+                callback(new Error("No record Found"),undefined);
+            }
+
+        }).catch(function (errApp) {
+
+            logger.error('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - [PGSQL] - Error Occurred while searching Application Developer %s ',reqId,DevID, errApp);
+            callback(errApp,undefined);
+
+        });
+
+
+
+            /*complete(function (errApp, resApp) {
 
             if(errApp)
             {
@@ -187,7 +363,7 @@ if(!isNaN(DevID)&&DevID)
                 }
             }
 
-        });
+        });*/
 
     }
     catch(ex)
@@ -208,7 +384,24 @@ function PickApplicationRecord(AppID,reqId,callback)
     if(!isNaN(AppID)&& AppID)
     {
         try{
-            DbConn.Application.find({where: [{id: AppID}]}).complete(function (errApp, resApp) {
+            DbConn.Application.find({where: [{id: AppID}]}).then(function (resApp) {
+
+                if(resApp) {
+                    logger.info('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [PGSQL] - Record found for Application %s by Developer %s ',reqId,AppID);
+                    callback(undefined, resApp);
+                }
+                else{
+                    logger.error('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [PGSQL] - No record found for Application %s by Developer %s ',reqId,AppID);
+                    callback(new Error("No record Found"),undefined);
+                }
+
+            }).catch(function (errApp) {
+                logger.error('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [PGSQL] - Error occurred while searching Application %s by Developer %s ',reqId,AppID, errApp);
+                callback(errApp,undefined);
+            });
+
+
+               /* complete(function (errApp, resApp) {
 
                 if(errApp)
                 {
@@ -227,7 +420,7 @@ function PickApplicationRecord(AppID,reqId,callback)
                     }
                 }
 
-            });
+            });*/
 
         }
         catch(ex)
@@ -251,7 +444,26 @@ function DeleteApplication(AppId,reqId,callback)
       try
       {
 
-          DbConn.Application.destroy({where: [{id: AppId}]}).complete(function(errApp,resApp)
+          DbConn.Application.destroy({where: [{id: AppId}]}).then(function (resApp) {
+
+              if(resApp)
+              {
+                  logger.info('[DVP-APPRegistry.DeleteApplication] - [%s] - [PGSQL] - Deletion succeeded of Application %s - Result %s',reqId,AppId);
+                  callback(undefined,resApp);
+              }
+              else
+              {
+                  logger.error('[DVP-APPRegistry.DeleteApplication] - [%s] - [PGSQL] - No record found for Application %s ',reqId,AppId);
+                  callback(new Error("No record Found"),undefined);
+              }
+
+          }).catch(function (errApp) {
+              logger.error('[DVP-APPRegistry.DeleteApplication] - [%s] - [PGSQL] - Error occurred on deletion of Application %s',reqId,AppId, errApp);
+              callback(errApp,undefined);
+          });
+
+
+              /*complete(function(errApp,resApp)
           {
               if(errApp)
               {
@@ -271,7 +483,7 @@ function DeleteApplication(AppId,reqId,callback)
                       callback(new Error("No record Found"),undefined);
                   }
               }
-          });
+          });*/
 
       }
       catch(ex)
@@ -295,7 +507,45 @@ function ActivateApplication(AppId,status,reqId,callback)
     {
         try
         {
-            DbConn.Application.find({where: [{id: AppId}]}).complete(function (errApp, resApp) {
+            DbConn.Application.find({where: [{id: AppId}]}).then(function (resApp) {
+
+                if(resApp)
+                {
+                    logger.info('[DVP-APPRegistry.ActivateApplication] - [%s] - [PGSQL] - Application %s is found',reqId,AppId);
+                    resApp.update(
+                        {
+                            Availability: status
+
+                        }
+                    ).then(function (resUpdate) {
+
+                            logger.info('[DVP-APPRegistry.ActivateApplication] - [%s] - [PGSQL] - Availability is changed to %s of Application %s is found',reqId,status,AppId);
+                            callback(undefined, resUpdate);
+
+                        }).error(function (errUpdate) {
+                            logger.error('[DVP-APPRegistry.ActivateApplication] - [%s] - [PGSQL] - Error occurred while changing Availability to %s of Application %s',reqId,status, errUpdate);
+                            callback(errUpdate,undefined);
+
+                        });
+
+                }
+                else
+                {
+                    logger.error('[DVP-APPRegistry.ActivateApplication] - [%s] - [PGSQL] - No record found for the Application %s',reqId,status,AppId);
+                    callback(new Error("No record Found"),undefined);
+                }
+
+
+            }).catch(function (errApp) {
+
+                logger.error('[DVP-APPRegistry.ActivateApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,AppId, errApp);
+                callback(errApp,undefined);
+
+
+
+            });
+
+                /*complete(function (errApp, resApp) {
                 if(errApp)
                 {
                     logger.error('[DVP-APPRegistry.ActivateApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,AppId, errApp);
@@ -329,7 +579,7 @@ function ActivateApplication(AppId,status,reqId,callback)
                         callback(new Error("No record Found"),undefined);
                     }
                 }
-            });
+            });*/
         }
         catch(ex)
         {
@@ -351,7 +601,43 @@ function ModifyApplicationURL(AppId,VAPPObj,reqId,callback)
     {
         try
         {
-            DbConn.Application.find({where: [{id: AppId},{AppDeveloperId:VAPPObj.DevID}]}).complete(function (errApp, resApp) {
+            DbConn.Application.find({where: [{id: AppId},{AppDeveloperId:VAPPObj.DevID}]}).then(function (resApp) {
+
+                if(resApp)
+                {
+                    logger.info('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Record of  Application %s is found',reqId,AppId);
+                    resApp.update(
+                        {
+                            Url: VAPPObj.Url
+
+                        }
+                    ).then(function (resUpdate) {
+
+                            logger.info('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Url of Application %s is updated to %s is succeeded',reqId,AppId,VAPPObj.Url);
+                            callback(undefined,resUpdate);
+
+                        }).catch(function (errUpdate) {
+                            logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Url updating is failed of Application %s' ,reqId,AppId, errUpdate);
+                            callback(errUpdate,undefined);
+
+                        });
+
+                }
+                else
+                {
+                    logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - No record found for Application %s' ,reqId,AppId);
+                    callback(new Error("No record Found"),undefined);
+                }
+
+            }).catch(function (errApp) {
+
+                logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s' ,reqId,AppId, errApp);
+                callback(errApp,undefined);
+
+            });
+
+
+                /*complete(function (errApp, resApp) {
                 if(errApp)
                 {
                     logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s' ,reqId,AppId, errApp);
@@ -385,7 +671,7 @@ function ModifyApplicationURL(AppId,VAPPObj,reqId,callback)
                         callback(new Error("No record Found"),undefined);
                     }
                 }
-            });
+            });*/
         }
         catch(ex)
         {
@@ -406,7 +692,46 @@ function TestApplication(AppId,reqId,callback)
     {
         try
         {
-            DbConn.Application.find({where: [{id: AppId}]}).complete(function (errApp, resApp) {
+            DbConn.Application.find({where: [{id: AppId}]}).then(function (resApp) {
+
+                if(resApp)
+                {
+                    logger.info('[DVP-APPRegistry.TestApplication] - [%s] - [PGSQL] - Record found for Application %s ',reqId,AppId, errApp);
+                    var options = {
+                        hostname: resApp.Url
+
+                    };
+
+                    var req = http.request(options, function(res) {
+                        logger.info('[DVP-APPRegistry.TestApplication] - [%s] - [HTTP] - Response code of HTTp request  %s ',reqId,res.statusCode);
+                        callback(undefined,res.statusCode);
+
+                        res.setEncoding('utf8');
+                        res.on('data', function (chunk) {
+                        });
+                    });
+
+                    req.on('error', function(e) {
+                        //console.log('problem with request: ' + e.message);
+                        logger.error('[DVP-APPRegistry.TestApplication] - [%s] - [HTTP] - Error occurred while sending HTTP request to Application URL  %s ',reqId,resApp.Url, errApp);
+                        callback(e.message,undefined);
+                    });
+                    req.end();
+
+                }
+                else
+                {
+                    logger.error('[DVP-APPRegistry.TestApplication] - [%s] - [PGSQL] - No record found for Application %s ',reqId,AppId);
+                    callback(new Error("No record Found"),undefined);
+                }
+
+            }).catch(function (errApp) {
+                logger.error('[DVP-APPRegistry.TestApplication] - [%s] - [PGSQL] - Error occurred while searching Application %s ',reqId,AppId, errApp);
+                callback(errApp,undefined);
+            });
+
+
+                /*complete(function (errApp, resApp) {
 
                 if(errApp)
                 {
@@ -447,7 +772,7 @@ function TestApplication(AppId,reqId,callback)
                     }
                 }
 
-            });
+            });*/
         }
         catch(ex)
         {
@@ -469,7 +794,62 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
     {
         try
         {
-            DbConn.Application.find({where: [{id: AppId}]}).complete(function (errCApp, resCApp) {
+            DbConn.Application.find({where: [{id: AppId}]}).then(function (resCApp) {
+
+                if(resCApp)
+                {
+
+                    DbConn.Application.find({where: [{id: MasterId},{ObjClass:"SYSTEM"}]}).complete(function (errMaster, resMaster)
+                    {
+                        if(errMaster)
+                        {
+                            logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Error found in searching Master Application %s of Object class = SYSTEM ',reqId,MasterId,errMaster);
+                            callback(errMaster,undefined);
+
+                        }
+                        else
+                        {
+                            if(resMaster)
+                            {
+                                resCApp.setMasterApplication(resMaster).complete(function(errMap,resMap)
+                                {
+                                    if(errMap)
+                                    {
+                                        logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Error searching Master Application %s of Object class = SYSTEM ',reqId,MasterId,errMaster);
+                                        callback(errMap,undefined);
+                                    }
+                                    else
+                                    {
+                                        logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Assign succeeded of Application %s and Master Application %s ',reqId,AppId,MasterId);
+                                        callback(undefined,resMap);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - No record found for MAster Application %s of Object class = SYSTEM ',reqId,MasterId);
+                                callback(new Error("Invalid Master AppID"),undefined);
+                            }
+                        }
+
+                    });
+
+                }
+
+                else
+                {
+                    logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - No record found for Child Application %s of Object class = SYSTEM ',reqId,AppId);
+                    callback(new Error("No child Application Found"),undefined);
+                }
+
+            }).catch(function (errCApp) {
+
+                logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Error found in searching Application %s ',reqId,AppId,errCApp);
+                callback(errCApp,undefined);
+
+            });
+
+                /*complete(function (errCApp, resCApp) {
                 if(errCApp)
                 {
                     logger.error('[DVP-APPRegistry.SetMasterApp] - [%s] - [PGSQL] - Error found in searching Application %s ',reqId,AppId,errCApp);
@@ -523,7 +903,7 @@ function SetMasterApp(AppId,MasterId,reqId,callback)
                         callback(new Error("No child Application Found"),undefined);
                     }
                 }
-            });
+            });*/
         }
         catch(ex)
         {
