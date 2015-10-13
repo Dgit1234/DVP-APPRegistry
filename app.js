@@ -7,11 +7,11 @@ var APP = require('./VoiceAppManagement.js');
 var http = require('http');
 var cors = require('cors');
 var config = require('config');
-var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
+var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var uuid=require('node-uuid');
 var port = config.Host.port || 3000;
 var version=config.Host.version;
-var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
+var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
 var RestServer = restify.createServer({
     name: "myapp",
