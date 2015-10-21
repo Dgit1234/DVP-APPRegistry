@@ -12,8 +12,93 @@ var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
 
-function CreateVoiceApplication(VAPPObj,reqId,callback)
+function CreateVoiceApplication(appobj,reqId,callback)
 {
+
+    if(appobj.AppName)
+    {
+        try
+        {
+            var ObjClass="";
+
+            DbConn.Application.find({where:{AppName:appobj.AppName}}).then(function (resApp) {
+
+                if(resApp)
+                {
+                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VoiceApp Name %s is already taken',reqId,appobj.AppName);
+                    callback(new Error('AppName is Already taken'), undefined);
+                }else
+                {
+                    if(appobj.ObjType=="HTTAPI"|| appobj.ObjType=="SOCKET" || appobj.ObjType=="EXTENDED")
+                    {
+                        try
+                        {
+                            if(appobj.IsDeveloper)
+                            {
+                                ObjClass = "DEVELOPER"
+                            }else
+                            {
+                                ObjClass = "SYSTEM"
+                            }
+
+
+                            var newObj = DbConn.Application
+                                .build(
+                                {
+                                    AppName: appobj.AppName,
+                                    Description: appobj.Description,
+                                    Url: appobj.Url,
+                                    ObjClass: ObjClass,
+                                    ObjType: appobj.ObjType,
+                                    ObjCategory:appobj.ObjCategory,
+                                    CompanyId: 1,
+                                    TenantId: 1,
+                                    Availability: appobj.Availability
+
+
+                                }
+                            )
+
+                            newObj.save().then(function (resSave) {
+
+                                logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, resSave);
+                                callback(undefined, resSave);
+
+                            }).catch(function (errSave) {
+
+                                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion failed', reqId, errSave);
+                                callback(errSave, undefined);
+                            });
+                        }
+                        catch(ex)
+                        {
+                            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in insertion of New Voice App record  ', reqId, ex);
+                            callback(ex, undefined);
+                        }
+                    }
+                }
+
+
+            }).catch(function (errApp) {
+                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,appobj.AppName, errApp);
+                callback(errApp, undefined);
+            });
+
+        }
+        catch(ex)
+        {
+            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Exception occurred when calling  method : CreateVoiceApplication',reqId, ex);
+            callback(ex,undefined);
+        }
+
+    }
+    else
+    {
+        callback(new Error("Empty request or AppName is Undefined"),undefined);
+    }
+
+
+/*
     if(VAPPObj && VAPPObj.AppName)
     {
         try {
@@ -21,14 +106,10 @@ function CreateVoiceApplication(VAPPObj,reqId,callback)
             var ObjClass="";
             DbConn.Application.find({where: [{AppName: VAPPObj.AppName}]}).then(function (resApp) {
 
-                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, errApp);
-                callback(errApp, undefined);
-
-            }).catch(function (resApp) {
-
                 if (resApp) {
-                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VioceApp Name %s is already taken',reqId,VAPPObj.AppName);
-                    callback(new Error('Username is Already taken'), undefined);
+
+                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VoiceApp Name %s is already taken',reqId,VAPPObj.AppName);
+                    callback(new Error('AppName is Already taken'), undefined);
                 }
                 else {
 
@@ -42,7 +123,7 @@ function CreateVoiceApplication(VAPPObj,reqId,callback)
                             }
 
 
-                            DbConn.Application.create(
+                            var obj = DbConn.Application.build(
                                 {
                                     AppName: VAPPObj.AppName,
                                     Description: VAPPObj.Description,
@@ -55,26 +136,19 @@ function CreateVoiceApplication(VAPPObj,reqId,callback)
                                     Availability: VAPPObj.Availability
 
                                 }
-                            ).then(function (resAppSave) {
+                            );
 
-                                    logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, errAppSave);
+                            obj.save().then(function (resAppSave) {
+
+                                    logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, resAppSave);
                                     callback(undefined, resAppSave);
 
                                 }).catch(function (errAppSave) {
-                                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record %s insertion failed', reqId, JSON.stringify(VAPPObj), errAppSave);
+                                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion failed', reqId, errAppSave);
                                     callback(errAppSave, undefined);
                                 });
 
-                                /*complete(function (errAppSave, resAppSave) {
-                                    if (errAppSave) {
-                                        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record %s insertion failed', reqId, JSON.stringify(VAPPObj), errAppSave);
-                                        callback(errAppSave, undefined);
-                                    }
-                                    else {
-                                        logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, errAppSave);
-                                        callback(undefined, resAppSave);
-                                    }
-                                });*/
+
                         }
                         catch (ex) {
                             logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in insertion of New Voice App record %s ', reqId, JSON.stringify(VAPPObj), ex);
@@ -89,70 +163,18 @@ function CreateVoiceApplication(VAPPObj,reqId,callback)
 
                 }
 
+            }).catch(function (errApp) {
+
+                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, errApp);
+                callback(errApp, undefined);
+
+
+
+
             });
 
 
 
-                /*complete(function (errApp, resApp) {
-                if (errApp) {
-                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, errApp);
-                    callback(errApp, undefined);
-                }
-                else {
-                    if (resApp) {
-                        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VioceApp Name %s is already taken',reqId,VAPPObj.AppName);
-                        callback(new Error('Username is Already taken'), undefined);
-                    }
-                    else {
-
-                        if(VAPPObj.ObjType=="HTTAPI"|| VAPPObj.ObjType=="SOCKET" || VAPPObj.ObjType=="EXTENDED") {
-                            try {
-                                if (VAPPObj.IsDeveloper) {
-                                    ObjClass = "DEVELOPER"
-                                }
-                                else {
-                                    ObjClass = "SYSTEM"
-                                }
-
-
-                                DbConn.Application.create(
-                                    {
-                                        AppName: VAPPObj.AppName,
-                                        Description: VAPPObj.Description,
-                                        Url: VAPPObj.Url,
-                                        ObjClass: ObjClass,
-                                        ObjType: VAPPObj.ObjType,
-                                        ObjCategory:VAPPObj.ObjCategory,
-                                        CompanyId: 1,
-                                        TenantId: 1,
-                                        Availability: VAPPObj.Availability
-
-                                    }
-                                ).complete(function (errAppSave, resAppSave) {
-                                        if (errAppSave) {
-                                            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record %s insertion failed', reqId, JSON.stringify(VAPPObj), errAppSave);
-                                            callback(errAppSave, undefined);
-                                        }
-                                        else {
-                                            logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, errAppSave);
-                                            callback(undefined, resAppSave);
-                                        }
-                                    });
-                            }
-                            catch (ex) {
-                                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in insertion of New Voice App record %s ', reqId, JSON.stringify(VAPPObj), ex);
-                                callback(ex, undefined);
-                            }
-                        }
-                        else
-                        {
-                            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Invalid ObjectType %s ', reqId, VAPPObj.ObjType);
-                            callback(new Error("Invalid ObjectType"), undefined);
-                        }
-
-                    }
-                }
-            })*/
         }
         catch(ex)
         {
@@ -164,6 +186,7 @@ function CreateVoiceApplication(VAPPObj,reqId,callback)
     {
         callback(new Error("Empty request or AppName is Undefined"),undefined);
     }
+*/
 
 
 }
@@ -191,16 +214,7 @@ function AssignApplicationToDeveloper(App,Dev,reqId,callback)
                                callback(errMap, undefined);
                            });
 
-                              /* complete(function (errMap, resMap) {
-                               if (errMap) {
-                                   logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while mapping Application %s with Developer %s',reqId,resApp.id,resDev.id, errApp);
-                                   callback(errMap, undefined);
-                               }
-                               else {
-                                   logger.info('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Mapping succeeded of Application %s with Developer %s',reqId,resApp.id,resDev.id);
-                                   callback(undefined, resMap);
-                               }
-                           })*/
+
                        }
                        else {
                            logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - No record found for Application Developer %s ',reqId,Dev);
@@ -209,38 +223,10 @@ function AssignApplicationToDeveloper(App,Dev,reqId,callback)
 
                    }).catch(function (errDev) {
                        logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while searching for records of Application Developer %s ',reqId,Dev, errApp);
-                       callback(errApp, undefined);
+                       callback(errDev, undefined);
                    });
 
 
-                       /*complete(function (errDev, resDev) {
-                       if (errDev)
-                       {
-                           logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while searching for records of Application Developer %s ',reqId,Dev, errApp);
-                           callback(errApp, undefined)
-
-                       }
-                       else {
-                           if (resDev) {
-                               logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Developer details found %s ',reqId,JSON.stringify(resDev), errApp);
-                               resApp.setAppDeveloper(resDev).complete(function (errMap, resMap) {
-                                   if (errMap) {
-                                       logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while mapping Application %s with Developer %s',reqId,resApp.id,resDev.id, errApp);
-                                       callback(errMap, undefined);
-                                   }
-                                   else {
-                                       logger.info('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Mapping succeeded of Application %s with Developer %s',reqId,resApp.id,resDev.id);
-                                       callback(undefined, resMap);
-                                   }
-                               })
-                           }
-                           else {
-                               logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - No record found for Application Developer %s ',reqId,Dev);
-                               callback(new Error("No record found for AppDevelopers : "+Dev),undefined);
-                           }
-                       }
-
-                   });*/
                }
                else
                {
@@ -255,55 +241,7 @@ function AssignApplicationToDeveloper(App,Dev,reqId,callback)
 
 
 
-              /* complete(function (errApp, resApp) {
 
-               if(errApp)
-               {
-                   logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,App, errApp);
-                   callback(errApp,undefined);
-               }
-               else {
-                   if (resApp)
-                   {
-                       logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Application details found %s ',reqId,JSON.stringify(resApp), errApp);
-                       DbConn.AppDeveloper.find({where: [{id: Dev}]}).complete(function (errDev, resDev) {
-                           if (errDev)
-                           {
-                               logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while searching for records of Application Developer %s ',reqId,Dev, errApp);
-                               callback(errApp, undefined)
-
-                           }
-                           else {
-                               if (resDev) {
-                                   logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Developer details found %s ',reqId,JSON.stringify(resDev), errApp);
-                                   resApp.setAppDeveloper(resDev).complete(function (errMap, resMap) {
-                                       if (errMap) {
-                                           logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Error occurred while mapping Application %s with Developer %s',reqId,resApp.id,resDev.id, errApp);
-                                           callback(errMap, undefined);
-                                       }
-                                       else {
-                                           logger.info('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Mapping succeeded of Application %s with Developer %s',reqId,resApp.id,resDev.id);
-                                           callback(undefined, resMap);
-                                       }
-                                   })
-                               }
-                               else {
-                                   logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - No record found for Application Developer %s ',reqId,Dev);
-                                   callback(new Error("No record found for AppDevelopers : "+Dev),undefined);
-                               }
-                           }
-
-                       });
-                   }
-                   else
-                   {
-                       logger.error('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - No record found for Application  %s ',reqId,App);
-                       callback(new Error("No record found for Application : "+App),undefined);
-                   }
-               }
-
-
-           });*/
        }
        catch(ex)
        {
