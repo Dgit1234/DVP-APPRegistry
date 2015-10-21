@@ -126,7 +126,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,
                 logger.debug('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
+            else
             {
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Request response : %s ', reqId, jsonString);

@@ -12,6 +12,7 @@ var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
 
+
 function CreateVoiceApplication(appobj,reqId,callback)
 {
 
@@ -21,14 +22,14 @@ function CreateVoiceApplication(appobj,reqId,callback)
         {
             var ObjClass="";
 
-            DbConn.Application.find({where:{AppName:appobj.AppName}}).then(function (resApp) {
+           // DbConn.Application.find({where:{AppName:appobj.AppName}}).then(function (resApp) {
 
-                if(resApp)
-                {
-                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VoiceApp Name %s is already taken',reqId,appobj.AppName);
-                    callback(new Error('AppName is Already taken'), undefined);
-                }else
-                {
+                //if(resApp)
+                //{
+                //    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VoiceApp Name %s is already taken',reqId,appobj.AppName);
+                //    callback(new Error('AppName is Already taken'), undefined);
+                //}else
+                //{
                     if(appobj.ObjType=="HTTAPI"|| appobj.ObjType=="SOCKET" || appobj.ObjType=="EXTENDED")
                     {
                         try
@@ -42,8 +43,8 @@ function CreateVoiceApplication(appobj,reqId,callback)
                             }
 
 
-                            var newObj = DbConn.Application
-                                .build(
+                            var newObj = DbConn.Application.build
+                            (
                                 {
                                     AppName: appobj.AppName,
                                     Description: appobj.Description,
@@ -57,16 +58,17 @@ function CreateVoiceApplication(appobj,reqId,callback)
 
 
                                 }
-                            )
+                            );
 
                             newObj.save().then(function (resSave) {
 
-                                logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, resSave);
+
+                                logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result ', reqId);
                                 callback(undefined, resSave);
 
                             }).catch(function (errSave) {
 
-                                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion failed', reqId, errSave);
+                                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion failed', reqId);
                                 callback(errSave, undefined);
                             });
                         }
@@ -76,13 +78,13 @@ function CreateVoiceApplication(appobj,reqId,callback)
                             callback(ex, undefined);
                         }
                     }
-                }
+                //}
 
 
-            }).catch(function (errApp) {
-                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,appobj.AppName, errApp);
-                callback(errApp, undefined);
-            });
+           // }).catch(function (errApp) {
+           //     logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,appobj.AppName, errApp);
+           //     callback(errApp, undefined);
+           // });
 
         }
         catch(ex)
