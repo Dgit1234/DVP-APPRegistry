@@ -38,11 +38,7 @@ RestServer.use(restify.acceptParser(RestServer.acceptable));
 RestServer.use(restify.queryParser());
 
 
-//.......................................................................................................................
-
-//RestServer.post('/dvp/'+version+'/APPRegistry/AppDeveloperManagement/AddNewDeveloperRecord',function(req,res,next)
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,next)
-{
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,next) {
 
     var reqId='';
     try {
@@ -59,7 +55,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,ne
         var Company=1;
         var Teanant=1;
 
-       // log.info("Inputs : "+req.body);
+
         logger.debug('[DVP-APPRegistry.CreateDeveloper] - [%s] - [HTTP] - Request Received  - Inputs - %s ',reqId,JSON.stringify(req.body));
 
         Developer.CreateDeveloper(req.body,reqId,function(err,resz)
@@ -95,11 +91,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,ne
     return next();
 });
 
-//.......................................................................................................................
-
-//RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/AddNewVoiceAppRecord',function(req,res,next)
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,next)
-{
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,next) {
     var reqId='';
     try {
 
@@ -146,11 +138,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,
     return next();
 });
 
-//.......................................................................................................................
-//RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/MapDeveloperAndApplication',function(req,res,next)
-
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDeveloper/:DevID',function(req,res,next)
-{
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDeveloper/:DevID',function(req,res,next) {
     var reqId='';
     try {
 
@@ -196,11 +184,8 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDev
     }
     return next();
 });
-//.......................................................................................................................
-//RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/DeleteVoiceAppRecord',function(req,res,next)
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMasterApp/:MAppID',function(req,res,next)
-{
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMasterApp/:MAppID',function(req,res,next) {
     var reqId='';
     try {
 
@@ -250,9 +235,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMaste
      next();
 });
 
-
-RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',function(req,res,next)
-{
+RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',function(req,res,next) {
     var reqId='';
     try {
 
@@ -302,11 +285,8 @@ RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',function(req,r
     }
     return next();
 });
-//.......................................................................................................................
-//RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/ChangeVoiceAppAvailability',function(req,res,next)
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:status',function(req,res,next)
-{
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:status',function(req,res,next) {
     var reqId='';
     try {
 
@@ -356,12 +336,8 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:stat
     }
     return next();
 });
-//.......................................................................................................................
-//RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppUrlModification',function(req,res,next)
 
-
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',function(req,res,next)
-{
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',function(req,res,next) {
     var reqId='';
     try {
 
@@ -408,11 +384,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',functi
     return next();
 });
 
-//.......................................................................................................................
-//RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/URLtest',function(req,res,next)
-
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',function(req,res,next)
-{
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',function(req,res,next) {
 
     var reqId='';
     try {
@@ -460,12 +432,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',funct
     return next();
 });
 
-
-//.......................................................................................................................
-
-//RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppRecordsOfDeveloper/:DevID',function(req,res,next)
-RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:DevID',function(req,res,next)
-{
+RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:DevID',function(req,res,next) {
     var reqId='';
     try {
 
@@ -510,10 +477,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:DevID',function(r
     return next();
 });
 
-//.......................................................................................................................
-//RestServer.get('/dvp/'+version+'/APPRegistry/VoiceAppManagement/FindVoiceAppRecordForID/:VID/:DevID',function(req,res,next)
-RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',function(req,res,next)
-{
+RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',function(req,res,next) {
     var reqId='';
     try {
 
@@ -559,5 +523,3 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',func
     }
     return next();
 });
-
-

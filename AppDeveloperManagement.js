@@ -2,17 +2,12 @@
  * Created by pawan on 4/8/2015.
  */
 var DbConn = require('dvp-dbmodels');
-//var messageFormatter = require('./DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 var stringify = require('stringify');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
 
-
-
-function CreateDeveloper(DevObj,reqId,callback)
-{
-
+function CreateDeveloper(DevObj,reqId,callback) {
     if(DevObj && DevObj.Username)
     {
         try {
@@ -65,8 +60,6 @@ function CreateDeveloper(DevObj,reqId,callback)
                 callback(errDev, undefined);
 
             });
-
-
 
 
         }
