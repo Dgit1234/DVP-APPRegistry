@@ -4,7 +4,6 @@
  */
 
 var DbConn = require('dvp-dbmodels');
-//var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 var stringify = require('stringify');
 var open = require('open');
 var http=require('http');
@@ -13,8 +12,7 @@ var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJ
 
 
 
-function CreateVoiceApplication(appobj,reqId,callback)
-{
+function CreateVoiceApplication(appobj,reqId,callback) {
 
     if(appobj.AppName)
     {
@@ -106,101 +104,9 @@ function CreateVoiceApplication(appobj,reqId,callback)
     }
 
 
-/*
-    if(VAPPObj && VAPPObj.AppName)
-    {
-        try {
-
-            var ObjClass="";
-            DbConn.Application.find({where: [{AppName: VAPPObj.AppName}]}).then(function (resApp) {
-
-                if (resApp) {
-
-                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VoiceApp Name %s is already taken',reqId,VAPPObj.AppName);
-                    callback(new Error('AppName is Already taken'), undefined);
-                }
-                else {
-
-                    if(VAPPObj.ObjType=="HTTAPI"|| VAPPObj.ObjType=="SOCKET" || VAPPObj.ObjType=="EXTENDED") {
-                        try {
-                            if (VAPPObj.IsDeveloper) {
-                                ObjClass = "DEVELOPER"
-                            }
-                            else {
-                                ObjClass = "SYSTEM"
-                            }
-
-
-                            var obj = DbConn.Application.build(
-                                {
-                                    AppName: VAPPObj.AppName,
-                                    Description: VAPPObj.Description,
-                                    Url: VAPPObj.Url,
-                                    ObjClass: ObjClass,
-                                    ObjType: VAPPObj.ObjType,
-                                    ObjCategory:VAPPObj.ObjCategory,
-                                    CompanyId: 1,
-                                    TenantId: 1,
-                                    Availability: VAPPObj.Availability
-
-                                }
-                            );
-
-                            obj.save().then(function (resAppSave) {
-
-                                    logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion succeeded. Result - %s ', reqId, resAppSave);
-                                    callback(undefined, resAppSave);
-
-                                }).catch(function (errAppSave) {
-                                    logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - New Voice App record insertion failed', reqId, errAppSave);
-                                    callback(errAppSave, undefined);
-                                });
-
-
-                        }
-                        catch (ex) {
-                            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in insertion of New Voice App record %s ', reqId, JSON.stringify(VAPPObj), ex);
-                            callback(ex, undefined);
-                        }
-                    }
-                    else
-                    {
-                        logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Invalid ObjectType %s ', reqId, VAPPObj.ObjType);
-                        callback(new Error("Invalid ObjectType"), undefined);
-                    }
-
-                }
-
-            }).catch(function (errApp) {
-
-                logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, errApp);
-                callback(errApp, undefined);
-
-
-
-
-            });
-
-
-
-        }
-        catch(ex)
-        {
-            logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Exception occurred when calling  method : CreateVoiceApplication',reqId, ex);
-            callback(ex,undefined);
-        }
-    }
-    else
-    {
-        callback(new Error("Empty request or AppName is Undefined"),undefined);
-    }
-*/
-
-
 }
 
-function AssignApplicationToDeveloper(App,Dev,reqId,callback)
-{
+function AssignApplicationToDeveloper(App,Dev,reqId,callback) {
    if(!isNaN(App) && !isNaN(Dev) && App && Dev)
    {
        try{
@@ -265,8 +171,7 @@ function AssignApplicationToDeveloper(App,Dev,reqId,callback)
 
 }
 
-function PickDeveloperApplications(DevID,reqId,callback)
-{
+function PickDeveloperApplications(DevID,reqId,callback) {
 if(!isNaN(DevID)&&DevID)
 {
     try{
@@ -307,8 +212,7 @@ if(!isNaN(DevID)&&DevID)
 }
 }
 
-function PickApplicationRecord(AppID,reqId,callback)
-{
+function PickApplicationRecord(AppID,reqId,callback) {
     if(!isNaN(AppID)&& AppID)
     {
         try{
@@ -346,8 +250,7 @@ function PickApplicationRecord(AppID,reqId,callback)
 
 }
 
-function DeleteApplication(AppId,reqId,callback)
-{
+function DeleteApplication(AppId,reqId,callback) {
   if(!isNaN(AppId)&&AppId)
   {
       try
@@ -390,8 +293,7 @@ function DeleteApplication(AppId,reqId,callback)
 
 }
 
-function ActivateApplication(AppId,status,reqId,callback)
-{
+function ActivateApplication(AppId,status,reqId,callback) {
     if(!isNaN(AppId)&&AppId)
     {
         try
@@ -450,8 +352,7 @@ function ActivateApplication(AppId,status,reqId,callback)
 
 }
 
-function ModifyApplicationURL(AppId,VAPPObj,reqId,callback)
-{
+function ModifyApplicationURL(AppId,VAPPObj,reqId,callback) {
     if(!isNaN(AppId)&&AppId&& VAPPObj)
     {
         try
@@ -502,13 +403,13 @@ function ModifyApplicationURL(AppId,VAPPObj,reqId,callback)
     }
     else
     {
+        logger.error('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - Empty request recieved' ,reqId);
         callback(new Error("Empty request"),undefined);
     }
 
 }
 
-function TestApplication(AppId,reqId,callback)
-{
+function TestApplication(AppId,reqId,callback) {
     if(!isNaN(AppId)&& AppId)
     {
         try
@@ -533,7 +434,7 @@ function TestApplication(AppId,reqId,callback)
                     });
 
                     req.on('error', function(e) {
-                        //console.log('problem with request: ' + e.message);
+
                         logger.error('[DVP-APPRegistry.TestApplication] - [%s] - [HTTP] - Error occurred while sending HTTP request to Application URL  %s ',reqId,resApp.Url, errApp);
                         callback(e.message,undefined);
                     });
@@ -568,8 +469,7 @@ function TestApplication(AppId,reqId,callback)
 
 }
 
-function SetMasterApp(AppId,MasterId,reqId,callback)
-{
+function SetMasterApp(AppId,MasterId,reqId,callback) {
     if(!isNaN(AppId) && AppId && !isNaN(MasterId) && MasterId)
     {
         try
