@@ -523,3 +523,50 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',func
     }
     return next();
 });
+
+RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications',function(req,res,next) {
+    var reqId='';
+    try {
+
+        try
+        {
+            reqId = uuid.v1();
+        }
+        catch(ex)
+        {
+
+        }
+        logger.debug('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [HTTP] - Request received' ,reqId);
+        APP.PickAllApplications(reqId,function(err,resz)
+        {
+
+
+            if(err)
+            {
+
+                logger.error('[DVP-APPRegistry.PickAllApplications] - [VOICEAPP] - Error occurred on method PickAllApplications ');
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.PickAllApplications] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
+            }
+            else if(resz)
+            {
+
+                logger.debug('[DVP-APPRegistry.PickAllApplications] - [VOICEAPP] - Record found - Returns - '+resz);
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.PickAllApplications] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
+            }
+
+        });
+
+    }
+    catch(ex)
+    {
+        logger.error('[DVP-APPRegistry.PickAllApplications] - [%s] - Exception occurred on method PickApplicationRecord',reqId, ex);
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.PickAllApplications] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
+    }
+    return next();
+});

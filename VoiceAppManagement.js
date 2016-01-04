@@ -250,6 +250,38 @@ function PickApplicationRecord(AppID,reqId,callback) {
 
 }
 
+function PickAllApplications(reqId,callback) {
+
+        try{
+            DbConn.Application.findAll().then(function (resApp) {
+
+                if(resApp) {
+                    logger.info('[DVP-APPRegistry.PickAllApplications] - [%s] - [PGSQL] - Record found for Applications ',reqId);
+                    callback(undefined, resApp);
+                }
+                else{
+                    logger.error('[DVP-APPRegistry.PickAllApplications] - [%s] - [PGSQL] - No record found for Applications ',reqId);
+                    callback(new Error("No record Found"),undefined);
+                }
+
+            }).catch(function (errApp) {
+                logger.error('[DVP-APPRegistry.PickAllApplications] - [%s] - [PGSQL] - Error occurred while searching Applications ',reqId);
+                callback(errApp,undefined);
+            });
+
+
+
+
+        }
+        catch(ex)
+        {
+            logger.error('[DVP-APPRegistry.PickApplicationRecord] - [%s] - Exception occurred when calling  method : PickAllApplications',reqId, ex);
+            callback(ex,undefined);
+        }
+
+
+}
+
 function DeleteApplication(AppId,reqId,callback) {
   if(!isNaN(AppId)&&AppId)
   {
@@ -548,4 +580,5 @@ module.exports.ActivateApplication = ActivateApplication;
 module.exports.ModifyApplicationURL = ModifyApplicationURL;
 module.exports.TestApplication = TestApplication;
 module.exports.SetMasterApp = SetMasterApp;
+module.exports.PickAllApplications =PickAllApplications;
 
