@@ -282,6 +282,38 @@ function PickAllApplications(reqId,callback) {
 
 }
 
+function PickActiveApplications(status,reqId,callback) {
+
+    try{
+        DbConn.Application.findAll({where: [{Availability: status}]}).then(function (resApp) {
+
+            if(resApp) {
+                logger.info('[DVP-APPRegistry.PickActiveApplications] - [%s] - [PGSQL] - Record found for Active Applications ',reqId);
+                callback(undefined, resApp);
+            }
+            else{
+                logger.error('[DVP-APPRegistry.PickActiveApplications] - [%s] - [PGSQL] - No record found for Active Applications ',reqId);
+                callback(new Error("No record Found"),undefined);
+            }
+
+        }).catch(function (errApp) {
+            logger.error('[DVP-APPRegistry.PickActiveApplications] - [%s] - [PGSQL] - Error occurred while searching Active Applications ',reqId);
+            callback(errApp,undefined);
+        });
+
+
+
+
+    }
+    catch(ex)
+    {
+        logger.error('[DVP-APPRegistry.PickActiveApplications] - [%s] - Exception occurred when calling  method : PickActiveApplications',reqId, ex);
+        callback(ex,undefined);
+    }
+
+
+}
+
 function DeleteApplication(AppId,reqId,callback) {
   if(!isNaN(AppId)&&AppId)
   {
@@ -581,4 +613,5 @@ module.exports.ModifyApplicationURL = ModifyApplicationURL;
 module.exports.TestApplication = TestApplication;
 module.exports.SetMasterApp = SetMasterApp;
 module.exports.PickAllApplications =PickAllApplications;
+module.exports.PickActiveApplications=PickActiveApplications;
 
