@@ -603,6 +603,58 @@ function SetMasterApp(AppId,MasterId,reqId,callback) {
 }
 
 
+function UpdateAppData(AppId,updtObj,reqId,callback) {
+    if(!isNaN(AppId)&&AppId&& updtObj)
+    {
+        try
+        {
+            DbConn.Application.find({where: [{id: AppId}]}).then(function (resApp) {
+
+                if(resApp)
+                {
+                    logger.info('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Record of  Application %s is found',reqId,AppId);
+                    resApp.updateAttributes(updtObj).then(function (resUpdate) {
+
+                            logger.info('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Url of Application %s is updated ',reqId,AppId);
+                            callback(undefined,resUpdate);
+
+                        }).catch(function (errUpdate) {
+                            logger.error('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Url updating is failed of Application %s' ,reqId,AppId, errUpdate);
+                            callback(errUpdate,undefined);
+
+                        });
+
+                }
+                else
+                {
+                    logger.error('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - No record found for Application %s' ,reqId,AppId);
+                    callback(new Error("No record Found"),undefined);
+                }
+
+            }).catch(function (errApp) {
+
+                logger.error('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s' ,reqId,AppId, errApp);
+                callback(errApp,undefined);
+
+            });
+
+
+
+        }
+        catch(ex)
+        {
+            logger.error('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Exception occurred when calling method : UpdateAppData : id %s ' ,reqId,AppId,ex);
+            callback(ex,undefined);
+        }
+    }
+    else
+    {
+        logger.error('[DVP-APPRegistry.UpdateAppData] - [%s] - Empty request received' ,reqId);
+        callback(new Error("Empty request"),undefined);
+    }
+
+}
+
 module.exports.CreateVoiceApplication = CreateVoiceApplication;
 module.exports.AssignApplicationToDeveloper = AssignApplicationToDeveloper;
 module.exports.PickDeveloperApplications = PickDeveloperApplications;
@@ -614,4 +666,5 @@ module.exports.TestApplication = TestApplication;
 module.exports.SetMasterApp = SetMasterApp;
 module.exports.PickAllApplications =PickAllApplications;
 module.exports.PickActiveApplications=PickActiveApplications;
+module.exports.UpdateAppData=UpdateAppData;
 

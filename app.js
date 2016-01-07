@@ -618,3 +618,51 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:status',function(
     }
     return next();
 });
+//no swagger
+RestServer.put('/DVP/API/'+version+'/APPRegistry/Application/:AppID',function(req,res,next) {
+
+    var reqId='';
+    try {
+
+        try
+        {
+            reqId = uuid.v1();
+        }
+        catch(ex)
+        {
+
+        }
+        logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - [HTTP] - Request Received - Inputs - id %s others %s',reqId,req.params.AppID,JSON.stringify(req.body));
+
+
+
+        APP.UpdateAppData(req.params.AppID,req.body,reqId,function(err,resz)
+        {
+
+
+            if(err)
+            {
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
+            }
+            else if(resz)
+            {
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
+            }
+
+        });
+
+
+    }
+    catch(ex)
+    {
+        logger.error('[DVP-APPRegistry.UpdateApplication] - [HTTP] - Exception occurred on method UpdateApplication ',reqId, ex);
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
+    }
+    return next();
+});
