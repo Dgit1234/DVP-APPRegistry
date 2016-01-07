@@ -615,11 +615,11 @@ function UpdateAppData(AppId,updtObj,reqId,callback) {
                     logger.info('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Record of  Application %s is found',reqId,AppId);
                     resApp.updateAttributes(updtObj).then(function (resUpdate) {
 
-                            logger.info('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Url of Application %s is updated ',reqId,AppId);
+                            logger.info('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] -  Application %s is updated ',reqId,AppId);
                             callback(undefined,resUpdate);
 
                         }).catch(function (errUpdate) {
-                            logger.error('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Url updating is failed of Application %s' ,reqId,AppId, errUpdate);
+                            logger.error('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Updating is failed of Application %s' ,reqId,AppId, errUpdate);
                             callback(errUpdate,undefined);
 
                         });
