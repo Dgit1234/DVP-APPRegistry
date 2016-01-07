@@ -604,6 +604,7 @@ function SetMasterApp(AppId,MasterId,reqId,callback) {
 
 
 function UpdateAppData(AppId,updtObj,reqId,callback) {
+
     if(!isNaN(AppId)&&AppId&& updtObj)
     {
         try
