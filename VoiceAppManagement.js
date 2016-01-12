@@ -7,7 +7,7 @@ var DbConn = require('dvp-dbmodels');
 var stringify = require('stringify');
 var open = require('open');
 var http=require('http');
-var request=require('request');
+var httpreq=require('request');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
@@ -508,11 +508,25 @@ function TestApplication(AppId,reqId,callback) {
                      });
                      req.end();*/
 
-                    request(resApp.Url, function (error, response, body) {
+
+                    var options = {
+                        url: resApp.Url,
+                        headers: {
+                            'authorization': ""
+                        }
+                    };
+
+
+                    httpreq(options, function (error, response, body) {
+                        console.log(JSON.stringify(response));
+
                         if(error)
                         {
-                            logger.error('[DVP-APPRegistry.TestApplication] - [%s] - [HTTP] - Error occurred while sending HTTP request to Application URL  %s ',reqId,resApp.Url, errApp);
-                            callback(error,undefined);
+                            console.log("gottah "+error);
+                            logger.error('[DVP-APPRegistry.TestApplication] - [%s] - [HTTP] - Error occurred while sending HTTP request to Application URL  %s ',reqId,resApp.Url, error);
+
+                                callback(error,undefined);
+
                         }
                         else
                         {

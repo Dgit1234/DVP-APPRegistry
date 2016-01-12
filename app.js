@@ -384,7 +384,9 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',functi
     return next();
 });
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',function(req,res,next) {
+//update swagger post -> get
+
+RestServer.get('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',function(req,res,next) {
 
     var reqId='';
     try {
@@ -407,11 +409,13 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',funct
 
             if(err)
             {
+                console.log("app error "+err);
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
-                logger.debug('[DVP-APPRegistry.TestApplication] - [%s] - Request response : %s ', reqId, jsonString);
+                logger.error('[DVP-APPRegistry.TestApplication] - [%s] - Request response  ', reqId);
+
                 res.end(jsonString);
             }
-            else if(resz)
+            else
             {
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.TestApplication] - [%s] - Request response : %s ', reqId, jsonString);
@@ -666,3 +670,33 @@ RestServer.put('/DVP/API/'+version+'/APPRegistry/Application/:AppID',function(re
     }
     return next();
 });
+
+function Crossdomain(req,res,next){
+
+
+    var xml='<?xml version=""1.0""?><!DOCTYPE cross-domain-policy SYSTEM ""http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd""> <cross-domain-policy>    <allow-access-from domain=""*"" />        </cross-domain-policy>';
+
+    /*var xml='<?xml version="1.0"?>\n';
+
+     xml+= '<!DOCTYPE cross-domain-policy SYSTEM "/xml/dtds/cross-domain-policy.dtd">\n';
+     xml+='';
+     xml+=' \n';
+     xml+='\n';
+     xml+='';*/
+    req.setEncoding('utf8');
+    res.end(xml);
+
+}
+
+function Clientaccesspolicy(req,res,next){
+
+
+    var xml='<?xml version="1.0" encoding="utf-8" ?>       <access-policy>        <cross-domain-access>        <policy>        <allow-from http-request-headers="*">        <domain uri="*"/>        </allow-from>        <grant-to>        <resource include-subpaths="true" path="/"/>        </grant-to>        </policy>        </cross-domain-access>        </access-policy>';
+    req.setEncoding('utf8');
+    res.end(xml);
+
+}
+
+RestServer.get("/crossdomain.xml",Crossdomain);
+RestServer.get("/clientaccesspolicy.xml",Clientaccesspolicy);
+
