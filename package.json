@@ -6,8 +6,8 @@
   "dependencies": {
     "config": "^1.16.0",
     "cors": "^2.7.1",
-    "dvp-common": "^0.0.2",
-    "dvp-dbmodels": "^0.0.21",
+    "dvp-common": "^0.0.16",
+    "dvp-dbmodels": "^0.0.37",
     "express": "^4.13.3",
     "gulp": "^3.9.0",
     "http": "^0.0.0",
