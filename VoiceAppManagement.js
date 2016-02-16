@@ -13,7 +13,7 @@ var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJ
 
 
 
-function CreateVoiceApplication(appobj,reqId,callback) {
+function CreateVoiceApplication(appobj,Company,Tenant,reqId,callback) {
 
     if(appobj.AppName)
     {
@@ -21,7 +21,7 @@ function CreateVoiceApplication(appobj,reqId,callback) {
         {
             var ObjClass="";
 
-            DbConn.Application.find({where:{AppName:appobj.AppName}}).then(function (resApp) {
+            DbConn.Application.find({where:[{AppName:appobj.AppName},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
                 if(resApp)
                 {
@@ -51,8 +51,8 @@ function CreateVoiceApplication(appobj,reqId,callback) {
                                     ObjClass: ObjClass,
                                     ObjType: appobj.ObjType,
                                     ObjCategory:appobj.ObjCategory,
-                                    CompanyId: 1,
-                                    TenantId: 1,
+                                    CompanyId: Company,
+                                    TenantId: Tenant,
                                     Availability: appobj.Availability
 
 
@@ -107,16 +107,16 @@ function CreateVoiceApplication(appobj,reqId,callback) {
 
 }
 
-function AssignApplicationToDeveloper(App,Dev,reqId,callback) {
+function AssignApplicationToDeveloper(App,Dev,Company,Tenant,reqId,callback) {
     if(!isNaN(App) && !isNaN(Dev) && App && Dev)
     {
         try{
-            DbConn.Application.find({where: [{id: App}]}).then(function (resApp) {
+            DbConn.Application.find({where: [{id: App},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
                 if (resApp)
                 {
                     logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Application details found %s ',reqId,JSON.stringify(resApp), errApp);
-                    DbConn.AppDeveloper.find({where: [{id: Dev}]}).then(function (resDev) {
+                    DbConn.AppDeveloper.find({where: [{id: Dev},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resDev) {
 
                         if (resDev) {
                             logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [PGSQL] - Developer details found %s ',reqId,JSON.stringify(resDev), errApp);
@@ -176,7 +176,7 @@ function PickDeveloperApplications(DevID,reqId,callback) {
     if(!isNaN(DevID)&&DevID)
     {
         try{
-            DbConn.Application.findAll({where: [{AppDeveloperId: DevID}]}).then(function (resApp) {
+            DbConn.Application.findAll({where: [{AppDeveloperId: DevID},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
                 if(resApp.length>0) {
                     logger.info('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - [PGSQL] - Application records found which are developed by  Application Developer %s',reqId,DevID);
@@ -193,9 +193,6 @@ function PickDeveloperApplications(DevID,reqId,callback) {
                 callback(errApp,undefined);
 
             });
-
-
-
 
 
 
@@ -217,7 +214,7 @@ function PickApplicationRecord(AppID,reqId,callback) {
     if(!isNaN(AppID)&& AppID)
     {
         try{
-            DbConn.Application.find({where: [{id: AppID}]}).then(function (resApp) {
+            DbConn.Application.find({where: [{id: AppID},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
                 if(resApp) {
                     logger.info('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [PGSQL] - Record found for Application %s by Developer %s ',reqId,AppID);
@@ -251,10 +248,10 @@ function PickApplicationRecord(AppID,reqId,callback) {
 
 }
 
-function PickAllApplications(reqId,callback) {
+function PickAllApplications(reqId,Company,Tenant,callback) {
 
     try{
-        DbConn.Application.findAll().then(function (resApp) {
+        DbConn.Application.findAll({where:[{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
             if(resApp) {
                 logger.info('[DVP-APPRegistry.PickAllApplications] - [%s] - [PGSQL] - Record found for Applications ',reqId);
@@ -315,13 +312,13 @@ function PickActiveApplications(status,reqId,callback) {
 
 }
 
-function DeleteApplication(AppId,reqId,callback) {
+function DeleteApplication(AppId,Company,Tenant,reqId,callback) {
     if(!isNaN(AppId)&&AppId)
     {
         try
         {
 
-            DbConn.Application.destroy({where: [{id: AppId}]}).then(function (resApp) {
+            DbConn.Application.destroy({where: [{id: AppId},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
                 if(resApp)
                 {
@@ -358,12 +355,12 @@ function DeleteApplication(AppId,reqId,callback) {
 
 }
 
-function ActivateApplication(AppId,status,reqId,callback) {
+function ActivateApplication(AppId,status,Company,Tenant,reqId,callback) {
     if(!isNaN(AppId)&&AppId)
     {
         try
         {
-            DbConn.Application.find({where: [{id: AppId}]}).then(function (resApp) {
+            DbConn.Application.find({where: [{id: AppId},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
                 if(resApp)
                 {
@@ -417,12 +414,12 @@ function ActivateApplication(AppId,status,reqId,callback) {
 
 }
 
-function ModifyApplicationURL(AppId,VAPPObj,reqId,callback) {
+function ModifyApplicationURL(AppId,VAPPObj,Company,Tenant,reqId,callback) {
     if(!isNaN(AppId)&&AppId&& VAPPObj)
     {
         try
         {
-            DbConn.Application.find({where: [{id: AppId},{AppDeveloperId:VAPPObj.DevID}]}).then(function (resApp) {
+            DbConn.Application.find({where: [{id: AppId},{AppDeveloperId:VAPPObj.DevID},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
                 if(resApp)
                 {
@@ -479,7 +476,7 @@ function TestApplication(AppId,reqId,callback) {
     {
         try
         {
-            DbConn.Application.find({where: [{id: AppId}]}).then(function (resApp) {
+            DbConn.Application.find({where: [{id: AppId},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
                 if(resApp)
                 {
@@ -565,17 +562,17 @@ function TestApplication(AppId,reqId,callback) {
 
 }
 
-function SetMasterApp(AppId,MasterId,reqId,callback) {
+function SetMasterApp(AppId,MasterId,Company,Tenant,reqId,callback) {
     if(!isNaN(AppId) && AppId && !isNaN(MasterId) && MasterId)
     {
         try
         {
-            DbConn.Application.find({where: [{id: AppId}]}).then(function (resCApp) {
+            DbConn.Application.find({where: [{id: AppId},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resCApp) {
 
                 if(resCApp)
                 {
 
-                    DbConn.Application.find({where: [{id: MasterId},{ObjClass:"SYSTEM"}]}).then(function(resMaster)
+                    DbConn.Application.find({where: [{id: MasterId},{ObjClass:"SYSTEM"},{CompanyId:Company},{TenantId:Tenant}]}).then(function(resMaster)
                     {
                         if(resMaster)
                         {
@@ -635,13 +632,13 @@ function SetMasterApp(AppId,MasterId,reqId,callback) {
 }
 
 
-function UpdateAppData(AppId,updtObj,reqId,callback) {
+function UpdateAppData(AppId,updtObj,Company,Tenant,reqId,callback) {
 
     if(!isNaN(AppId)&&AppId&& updtObj)
     {
         try
         {
-            DbConn.Application.find({where: [{id: AppId}]}).then(function (resApp) {
+            DbConn.Application.find({where: [{id: AppId},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
                 if(resApp)
                 {

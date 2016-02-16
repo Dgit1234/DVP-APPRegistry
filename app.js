@@ -12,6 +12,9 @@ var uuid=require('node-uuid');
 var port = config.Host.port || 3000;
 var version=config.Host.version;
 var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
+var jwt = require('restify-jwt');
+var secret = require('dvp-common/Authentication/Secret.js');
+var authorization = require('dvp-common/Authentication/Authorization.js');
 
 var RestServer = restify.createServer({
     name: "myapp",
@@ -22,9 +25,10 @@ restify.CORS.ALLOW_HEADERS.push('authorization');
 //restify.CORS.ALLOW_HEADERS.push('Access-Control-Request-Method');
 
 
-
+RestServer.pre(restify.pre.userAgentConnection());
 RestServer.use(restify.CORS());
 RestServer.use(restify.fullResponse());
+RestServer.use(jwt({secret: secret.Secret}));
 //Server listen
 
 RestServer.listen(port, function () {
@@ -38,9 +42,11 @@ RestServer.use(restify.acceptParser(RestServer.acceptable));
 RestServer.use(restify.queryParser());
 
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,next) {
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
 
     var reqId='';
+
+
     try {
 
         try
@@ -52,13 +58,21 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,ne
 
         }
 
-        var Company=1;
-        var Teanant=1;
+
+        if(!req.user.company || !req.user.tenant)
+        {
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid Authorization details found "), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.CreateDeveloper] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
+
+        var Company=req.user.company;
+        var Tenant=req.user.tenant;
 
 
         logger.debug('[DVP-APPRegistry.CreateDeveloper] - [%s] - [HTTP] - Request Received  - Inputs - %s ',reqId,JSON.stringify(req.body));
 
-        Developer.CreateDeveloper(req.body,reqId,function(err,resz)
+        Developer.CreateDeveloper(req.body,Company,Tenant,reqId,function(err,resz)
         {
 
 
@@ -69,7 +83,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,ne
                 logger.debug('[DVP-APPRegistry.CreateDeveloper] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
+            else
             {
 
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
@@ -91,7 +105,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',function(req,res,ne
     return next();
 });
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,next) {
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
     var reqId='';
     try {
 
@@ -104,11 +118,17 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,
 
         }
 
-        var Company=1;
-        var Teanant=1;
+        if(!req.user.company || !req.user.tenant) {
+
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid Authorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
+        var Company=req.user.company;
+        var Tenant=req.user.tenant;
 
         logger.debug('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,JSON.stringify(req.body));
-        APP.CreateVoiceApplication(req.body,reqId,function(err,resz)
+        APP.CreateVoiceApplication(req.body,Company,Tenant,reqId,function(err,resz)
         {
 
 
@@ -138,7 +158,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application',function(req,res,
     return next();
 });
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDeveloper/:DevID',function(req,res,next) {
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDeveloper/:DevID',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
     var reqId='';
     try {
 
@@ -151,22 +171,25 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDev
 
         }
 
-        var Company=1;
-        var Teanant=1;
-
-        logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [HTTP]  - Request Received - Inputs - App %s Dev %s ',reqId,req.params.AppID,req.params.DevID);
-        APP.AssignApplicationToDeveloper(req.params.AppID,req.params.DevID,reqId,function(err,resz)
+        if(!req.user.company || !req.user.tenant)
         {
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid authorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
+
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
+        logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - [HTTP]  - Request Received - Inputs - App %s Dev %s ', reqId, req.params.AppID, req.params.DevID);
+        APP.AssignApplicationToDeveloper(req.params.AppID, req.params.DevID, Company, Tenant, reqId, function (err, resz) {
 
 
-            if(err)
-            {
+            if (err) {
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else  {
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.AssignApplicationToDeveloper] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
@@ -185,7 +208,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/AssignToDev
     return next();
 });
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMasterApp/:MAppID',function(req,res,next) {
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMasterApp/:MAppID',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
     var reqId='';
     try {
 
@@ -198,23 +221,26 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMaste
 
         }
 
-        var Company=1;
-        var Teanant=1;
+        if(!req.user.company || !req.user.tenant) {
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid authorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
 
-        logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,req.params.MAppID);
-        APP.SetMasterApp(req.params.CAppID,req.params.MAppID,reqId,function(err,resz)
-        {
+
+        logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - [HTTP] - Request Received - Inputs - %s', reqId, req.params.MAppID);
+        APP.SetMasterApp(req.params.CAppID, req.params.MAppID,Company,Tenant, reqId, function (err, resz) {
 
 
-            if(err)
-            {
+            if (err) {
 
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else {
 
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - Request response : %s ', reqId, jsonString);
@@ -222,6 +248,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMaste
             }
 
         });
+
 
     }
     catch(ex)
@@ -232,10 +259,10 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMaste
         logger.debug('[DVP-APPRegistry.SetMasterApp] - [%s] - Request response : %s ', reqId, jsonString);
         res.end(jsonString);
     }
-     next();
+    next();
 });
 
-RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',function(req,res,next) {
+RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
     var reqId='';
     try {
 
@@ -248,24 +275,26 @@ RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',function(req,r
 
         }
 
-        var Company=1;
-        var Teanant=1;
+        if(!req.user.company || !req.user.tenant) {
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid authorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.DeleteApplication] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
 
 
-        logger.debug('[DVP-APPRegistry.DeleteApplication] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,req.params.id);
-        APP.DeleteApplication(req.params.id,reqId,function(err,resz)
-        {
+        logger.debug('[DVP-APPRegistry.DeleteApplication] - [%s] - [HTTP] - Request Received - Inputs - %s', reqId, req.params.id);
+        APP.DeleteApplication(req.params.id, Company,Tenant,reqId, function (err, resz) {
 
 
-            if(err)
-            {
+            if (err) {
 
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.DeleteApplication] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else  {
 
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.DeleteApplication] - [%s] - Request response : %s ', reqId, jsonString);
@@ -286,7 +315,7 @@ RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',function(req,r
     return next();
 });
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:status',function(req,res,next) {
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:status',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
     var reqId='';
     try {
 
@@ -299,24 +328,28 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:stat
 
         }
 
-        var Company=1;
-        var Teanant=1;
+        if(!req.user.company || !req.user.tenant) {
 
-    logger.debug('[DVP-APPRegistry.ActivateApplication] - [%s] - [HTTP] - Request Received - Inputs -App %s others %s',reqId,req.params.id,JSON.stringify(req.body));
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid Authorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.ActivateApplication] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
 
-        APP.ActivateApplication(req.params.id,req.params.status,reqId,function(err,resz)
-        {
+        }
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
+
+        logger.debug('[DVP-APPRegistry.ActivateApplication] - [%s] - [HTTP] - Request Received - Inputs -App %s others %s', reqId, req.params.id, JSON.stringify(req.body));
+
+        APP.ActivateApplication(req.params.id, req.params.status,Company,Tenant, reqId, function (err, resz) {
 
 
-            if(err)
-            {
+            if (err) {
 
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.ActivateApplication] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else {
 
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.ActivateApplication] - [%s] - Request response : %s ', reqId, jsonString);
@@ -324,6 +357,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:stat
             }
 
         });
+
 
     }
     catch(ex)
@@ -337,7 +371,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:id/Activate/:stat
     return next();
 });
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',function(req,res,next) {
+RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
     var reqId='';
     try {
 
@@ -350,22 +384,25 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',functi
 
         }
 
-        var Company=1;
-        var Teanant=1;
+        if(!req.user.company || !req.user.tenant) {
+            var jsonString = messageFormatter.FormatMessage(new Error('Invalid authorization details found'), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
 
-        logger.debug('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [HTTP] - Request Received - Inputs - Id %s other %s',reqId,req.params.AppID,JSON.stringify(req.body));
-        APP.ModifyApplicationURL(req.params.AppID,req.body,reqId,function(err,resz)
-        {
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
+
+        logger.debug('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - [HTTP] - Request Received - Inputs - Id %s other %s', reqId, req.params.AppID, JSON.stringify(req.body));
+        APP.ModifyApplicationURL(req.params.AppID, req.body,Company,Tenant,reqId, function (err, resz) {
 
 
-            if(err)
-            {
+            if (err) {
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else  {
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.ModifyApplicationURL] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
@@ -386,7 +423,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:AppID/URL',functi
 
 //update swagger post -> get
 
-RestServer.get('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',function(req,res,next) {
+RestServer.get('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',authorization({resource:"appreg", action:"read"}),function(req,res,next) {
 
     var reqId='';
     try {
@@ -399,31 +436,38 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',functi
         {
 
         }
-    logger.debug('[DVP-APPRegistry.TestApplication] - [%s] - [HTTP] - Request Received - Inputs - id %s others %s',reqId,req.params.AppID,JSON.stringify(req.body));
+
+        if(!req.user.company || !req.user.tenant) {
+
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid authorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.error('[DVP-APPRegistry.TestApplication] - [%s] - Request response  ', reqId);
+            res.end(jsonString);
+
+        }
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
 
 
-
-        APP.TestApplication(req.params.AppID,reqId,function(err,resz)
-        {
+        logger.debug('[DVP-APPRegistry.TestApplication] - [%s] - [HTTP] - Request Received - Inputs - id %s others %s', reqId, req.params.AppID, JSON.stringify(req.body));
 
 
-            if(err)
-            {
-                console.log("app error "+err);
+        APP.TestApplication(req.params.AppID, Company,Tenant,reqId, function (err, resz) {
+
+
+            if (err) {
+
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.error('[DVP-APPRegistry.TestApplication] - [%s] - Request response  ', reqId);
 
                 res.end(jsonString);
             }
-            else
-            {
+            else {
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.TestApplication] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
 
         });
-
 
     }
     catch(ex)
@@ -437,7 +481,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Application/:AppID/Test',functi
 });
 
 // update on swagger
-RestServer.get('/DVP/API/'+version+'/APPRegistry/Developer/:DevID/Applications',function(req,res,next) {
+RestServer.get('/DVP/API/'+version+'/APPRegistry/Developer/:DevID/Applications',authorization({resource:"appreg", action:"read"}),function(req,res,next) {
     var reqId='';
     try {
 
@@ -449,20 +493,26 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Developer/:DevID/Applications',
         {
 
         }
-    logger.debug('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - [HTTP] - Request received - Inputs - %s',reqId,req.params.DevID);
+        if(!req.user.company && !req.user.tenant) {
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid authorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
 
-        APP.PickDeveloperApplications(req.params.DevID,reqId,function(err,resz)
-        {
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
+
+        logger.debug('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - [HTTP] - Request received - Inputs - %s', reqId, req.params.DevID);
+
+        APP.PickDeveloperApplications(req.params.DevID,Company,Tenant, reqId, function (err, resz) {
 
 
-            if(err)
-            {
+            if (err) {
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else  {
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.PickDeveloperApplications] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
@@ -482,7 +532,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Developer/:DevID/Applications',
     return next();
 });
 
-RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',function(req,res,next) {
+RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',authorization({resource:"appreg", action:"read"}),function(req,res,next) {
     var reqId='';
     try {
 
@@ -494,29 +544,40 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',func
         {
 
         }
-        logger.debug('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [HTTP] - Request received - Inputs - AppID : $s Developer : %s',reqId,req.params.VID);
-        APP.PickApplicationRecord(req.params.AppID,reqId,function(err,resz)
+
+        if(!req.user.company || !req.user.tenant)
         {
+            logger.error('[DVP-APPRegistry.PickApplicationRecord] - [VOICEAPP] - Error occurred on method PickApplicationRecord - Records - AppID : ' + req.params.AppId);
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid autorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.PickApplicationRecord] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
+
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
+
+        logger.debug('[DVP-APPRegistry.PickApplicationRecord] - [%s] - [HTTP] - Request received - Inputs - AppID : $s Developer : %s', reqId, req.params.VID);
+        APP.PickApplicationRecord(req.params.AppID,Company,Tenant, reqId, function (err, resz) {
 
 
-            if(err)
-            {
+            if (err) {
 
-                logger.error('[DVP-APPRegistry.PickApplicationRecord] - [VOICEAPP] - Error occurred on method PickApplicationRecord - Records - AppID : '+req.params.AppId);
+                logger.error('[DVP-APPRegistry.PickApplicationRecord] - [VOICEAPP] - Error occurred on method PickApplicationRecord - Records - AppID : ' + req.params.AppId);
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.PickApplicationRecord] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else {
 
-                logger.debug('[DVP-APPRegistry.PickApplicationRecord] - [VOICEAPP] - Record found - Returns - '+resz);
+
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.PickApplicationRecord] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
 
         });
+
+
 
     }
     catch(ex)
@@ -529,7 +590,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/ApplicationDetails/:AppID',func
     return next();
 });
 
-RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications',function(req,res,next) {
+RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications',authorization({resource:"appreg", action:"read"}),function(req,res,next) {
     var reqId='';
     try {
 
@@ -541,29 +602,38 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications',function(req,res,
         {
 
         }
-        logger.debug('[DVP-APPRegistry.PickAllApplications] - [%s] - [HTTP] - Request received' ,reqId);
-        APP.PickAllApplications(reqId,function(err,resz)
+
+        if(!req.user.company || !req.user.tenant)
         {
+            logger.error('[DVP-APPRegistry.PickAllApplications] - [VOICEAPP] - Error occurred on method PickAllApplications ');
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid Authorization found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.PickAllApplications] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
+
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
+        logger.debug('[DVP-APPRegistry.PickAllApplications] - [%s] - [HTTP] - Request received', reqId);
+        APP.PickAllApplications(reqId,Company,Tenant, function (err, resz) {
 
 
-            if(err)
-            {
+            if (err) {
 
                 logger.error('[DVP-APPRegistry.PickAllApplications] - [VOICEAPP] - Error occurred on method PickAllApplications ');
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.PickAllApplications] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else {
 
-                logger.debug('[DVP-APPRegistry.PickAllApplications] - [VOICEAPP] - Record found - Returns - '+resz);
+                logger.debug('[DVP-APPRegistry.PickAllApplications] - [VOICEAPP] - Record found - Returns - ' + resz);
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.PickAllApplications] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
 
         });
+
 
     }
     catch(ex)
@@ -576,43 +646,51 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications',function(req,res,
     return next();
 });
 
-RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:status',function(req,res,next) {
+RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:status',authorization({resource:"appreg", action:"read"}),function(req,res,next) {
     var reqId='';
     try {
 
-        try
-        {
+        try {
             reqId = uuid.v1();
         }
-        catch(ex)
-        {
+        catch (ex) {
 
         }
-        logger.debug('[DVP-APPRegistry.PickActivatedApplications] - [%s] - [HTTP] - Request received' ,reqId);
-        APP.PickActiveApplications(req.params.status,reqId,function(err,resz)
-        {
+
+        if (!req.user.company || !req.user.tenant) {
+            logger.error('[DVP-APPRegistry.PickActiveApplications] - [VOICEAPP] - Error occurred on method PickActiveApplications ');
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid authorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.PickActiveApplications] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
 
 
-            if(err)
-            {
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
+
+        logger.debug('[DVP-APPRegistry.PickActivatedApplications] - [%s] - [HTTP] - Request received', reqId);
+        APP.PickActiveApplications(req.params.status, Company, Tenant, reqId, function (err, resz) {
+
+
+            if (err) {
 
                 logger.error('[DVP-APPRegistry.PickActiveApplications] - [VOICEAPP] - Error occurred on method PickActiveApplications ');
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.PickActiveApplications] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else {
 
-                logger.debug('[DVP-APPRegistry.PickActiveApplications] - [VOICEAPP] - Record found - Returns - '+resz);
+                logger.debug('[DVP-APPRegistry.PickActiveApplications] - [VOICEAPP] - Record found - Returns - ' + resz);
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.PickActiveApplications] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
 
-        });
 
+        });
     }
+
     catch(ex)
     {
         logger.error('[DVP-APPRegistry.PickActiveApplications] - [%s] - Exception occurred on method PickActiveApplications',reqId, ex);
@@ -623,7 +701,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:status',function(
     return next();
 });
 //no swagger
-RestServer.put('/DVP/API/'+version+'/APPRegistry/Application/:AppID',function(req,res,next) {
+RestServer.put('/DVP/API/'+version+'/APPRegistry/Application/:AppID',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
 
     var reqId='';
     try {
@@ -636,28 +714,34 @@ RestServer.put('/DVP/API/'+version+'/APPRegistry/Application/:AppID',function(re
         {
 
         }
-        logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - [HTTP] - Request Received - Inputs - id %s others %s',reqId,req.params.AppID,JSON.stringify(req.body));
+
+        if(!req.user.company || !req.user.tenant) {
+            var jsonString = messageFormatter.FormatMessage(new Error("Invalid authorization details found"), "ERROR/EXCEPTION", false, undefined);
+            logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
+            res.end(jsonString);
+        }
 
 
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
+        logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - [HTTP] - Request Received - Inputs - id %s others %s', reqId, req.params.AppID, JSON.stringify(req.body));
+        APP.UpdateAppData(req.params.AppID, req.body,Company,Tenant, reqId, function (err, resz) {
 
-        APP.UpdateAppData(req.params.AppID,req.body,reqId,function(err,resz)
-        {
 
-
-            if(err)
-            {
+            if (err) {
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else if(resz)
-            {
+            else {
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
                 logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
 
         });
+
+
 
 
     }

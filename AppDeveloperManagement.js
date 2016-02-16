@@ -7,11 +7,11 @@ var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
 
-function CreateDeveloper(DevObj,reqId,callback) {
+function CreateDeveloper(DevObj,Company,Tenant,reqId,callback) {
     if(DevObj && DevObj.Username)
     {
         try {
-            DbConn.AppDeveloper.find({where: [{Username: DevObj.Username}]}).then(function (resDev) {
+            DbConn.AppDeveloper.find({where: [{Username: DevObj.Username},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resDev) {
 
                 if (resDev) {
                     logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - Developer Username %s is already taken',reqId,DevObj.Username);
@@ -28,8 +28,8 @@ function CreateDeveloper(DevObj,reqId,callback) {
                                 ObjClass: "OBJCLZ",
                                 ObjType: "OBJTYP",
                                 ObjCategory: "OBJCAT",
-                                CompanyId: 1,
-                                TenantId: 1,
+                                CompanyId: Company,
+                                TenantId:Tenant,
                                 RegDate: (new Date()).toString(),
                                 RefId:DevObj.RefId,
                                 Availability:DevObj.Availability

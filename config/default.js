@@ -9,8 +9,8 @@ module.exports = {
   },
   "Redis":
   {
-    "ip": "REDIS_IP",
-    "port": "REDIS_PORT"
+    "ip": "45.55.142.207",
+    "port": 6379
 
   },
 
