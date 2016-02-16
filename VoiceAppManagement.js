@@ -12,12 +12,12 @@ var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
 var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
 
-function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
+function AddNewVoiceAppRecord(VAPPObj,Company,Tenant,reqId,callback)
 {
     try {
 
         var ObjClass="";
-        DbConn.Application.find({where: [{AppName: VAPPObj.AppName}]}).complete(function (err, Aobj) {
+        DbConn.Application.find({where: [{AppName: VAPPObj.AppName},{CompanyId:Company},{TenantId:Tenant}]}).complete(function (err, Aobj) {
             if (err) {
                 logger.error('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - [PGSQL] - Error occurred while searching for records of Application %s ',reqId,VAPPObj.AppName, err);
                 callback(err, undefined);
@@ -47,8 +47,8 @@ function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
                                 ObjClass: ObjClass,
                                 ObjType: VAPPObj.Protocol,
                                 ObjCategory: "",
-                                CompanyId: 1,
-                                TenantId: 1,
+                                CompanyId: Company,
+                                TenantId: Tenant,
                                 Availability:VAPPObj.Availability
 
                             }
@@ -83,10 +83,10 @@ function AddNewVoiceAppRecord(VAPPObj,reqId,callback)
     }
 }
 
-function MapDeveloperAndApplication(App,Dev,reqId,callback)
+function MapDeveloperAndApplication(App,Dev,Company,Tenant,reqId,callback)
 {
     try{
-        DbConn.Application.find({where: [{id: App}]}).complete(function (err, Aobj) {
+        DbConn.Application.find({where: [{id: App},{CompanyId:Company},{TenantId:Tenant}]}).complete(function (err, Aobj) {
 
             if(err)
             {
@@ -176,29 +176,23 @@ function FindAllVoiceAppRecords(VAPPObj,reqId,callback)
     }
 }
 
-function FindVoiceAppRecordByID(VID,DEVID,reqId,callback)
+function FindVoiceAppRecordByID(VID,DEVID,Company,Tenant,reqId,callback)
 {
     try{
-        DbConn.Application.find({where: [{id: VID},{AppDeveloperId:DEVID}]}).complete(function (err, Aobj) {
+        DbConn.Application.find({where: [{id: VID},{AppDeveloperId:DEVID},{CompanyId:Company},{TenantId:Tenant}]}).then(function (Aobj) {
 
-            if(err)
-            {
-                logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - Error occurred while searching Application %s by Developer %s ',reqId,VID,DEVID, err);
-                callback(err,undefined);
-            }
-            else
-            {
-                if(Aobj) {
-                    logger.info('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - Record found for Application %s by Developer %s ',reqId,VID,DEVID);
-                    callback(undefined, JSON.stringify(Aobj));
-                }
-                else{
-                    logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - No record found for Application %s by Developer %s ',reqId,VID,DEVID);
-                    callback(new Error("No record Found"),undefined);
-                }
-            }
+
+                logger.info('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - Record found for Application %s by Developer %s ',reqId,VID,DEVID);
+                callback(undefined, JSON.stringify(Aobj));
+
+
+        }).catch(function (err) {
+
+            logger.error('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [PGSQL] - Error occurred while searching Application %s by Developer %s ',reqId,VID,DEVID, err);
+            callback(err,undefined);
 
         });
+
 
     }
     catch(ex)

@@ -1,3 +1,8 @@
+
+
+
+
+
 /**
  * Created by pawan on 4/8/2015.
  */
@@ -14,6 +19,10 @@ var version=config.Host.version;
 var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 //var version=config.Host.version;
 
+var jwt = require('restify-jwt');
+var secret = require('dvp-common/Authentication/Secret.js');
+var authorization = require('dvp-common/Authentication/Authorization.js');
+
 var RestServer = restify.createServer({
     name: "myapp",
     version: '1.0.0'
@@ -26,8 +35,11 @@ var RestServer = restify.createServer({
 //restify.CORS.ALLOW_HEADERS.push('Accept-Language');
 
 //RestServer.use(restify.CORS());
+RestServer.pre(restify.pre.userAgentConnection());
 RestServer.use(cors());
 RestServer.use(restify.fullResponse());
+restify.CORS.ALLOW_HEADERS.push('authorization');
+RestServer.use(jwt({secret: secret.Secret}));
 //Server listen
 
 RestServer.listen(port, function () {
@@ -46,8 +58,9 @@ RestServer.use(restify.queryParser());
 
 //.......................................................................................................................
 
-//RestServer.post('/dvp/'+version+'/APPRegistry/AppDeveloperManagement/AddNewDeveloperRecord',function(req,res,next)
-RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Developer',function(req,res,next)
+
+
+RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Developer',authorization({resource:"appreg", action:"write"}),function(req,res,next)
 {
 
    // log.info("\n.............................................Add appointment Starts....................................................\n");
@@ -62,11 +75,13 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Develop
         {
 
         }
+        var Company=req.user;
+        var Tenant=req.user;
 
        // log.info("Inputs : "+req.body);
         logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [HTTP] - Request Received  - Inputs - %s ',reqId,JSON.stringify(req.body));
 
-        Developer.AddNewDeveloperRecord(req.body,reqId,function(err,resz)
+        Developer.AddNewDeveloperRecord(req.body,Company,Tenant,reqId,function(err,resz)
         {
 
 
@@ -110,8 +125,8 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/AppDeveloperManagement/Develop
 
 //.......................................................................................................................
 
-//RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/AddNewVoiceAppRecord',function(req,res,next)
-RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp',function(req,res,next)
+
+RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp',authorization({resource:"appreg", action:"write"}),function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     var reqId='';
@@ -125,9 +140,12 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp',f
         {
 
         }
+
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
         // log.info("Inputs : "+req.body);
         logger.debug('[DVP-APPRegistry.AddNewVoiceAppRecord] - [%s] - [HTTP] - Request Received - Inputs - %s',reqId,JSON.stringify(req.body));
-        VAPP.AddNewVoiceAppRecord(req.body,reqId,function(err,resz)
+        VAPP.AddNewVoiceAppRecord(req.body,Company,Tenant,reqId,function(err,resz)
         {
 
 
@@ -167,9 +185,8 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceApp',f
 });
 
 //.......................................................................................................................
-//RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/MapDeveloperAndApplication',function(req,res,next)
-// check no body needed
-RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application/:app/MapWithDeveloper/:Dev',function(req,res,next)
+
+RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application/:app/MapWithDeveloper/:Dev',authorization({resource:"appreg", action:"write"}),function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     var reqId='';
@@ -183,9 +200,12 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application
         {
 
         }
-        // log.info("Inputs : "+req.body);
+
+        var Company;
+        var Tenant;
+
         logger.debug('[DVP-APPRegistry.MapDeveloperAndApplication] - [%s] - [HTTP]  - Request Received - Inputs - App %s Dev %s ',reqId,req.params.app,req.params.Dev);
-        VAPP.MapDeveloperAndApplication(req.params.app,req.params.Dev,reqId,function(err,resz)
+        VAPP.MapDeveloperAndApplication(req.params.app,req.params.Dev,Company,Tenant,reqId,function(err,resz)
         {
 
 
@@ -227,7 +247,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application
 //RestServer.post('/dvp/'+version+'/APPRegistry/VoiceAppManagement/DeleteVoiceAppRecord',function(req,res,next)
 //check no body
 
-RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application/:Mapp/SetAsMasterAppOf/:Capp',function(req,res,next)
+RestServer.post('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/Application/:Mapp/SetAsMasterAppOf/:Capp',authorization({resource:"appreg", action:"write"}),function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     var reqId='';
@@ -572,7 +592,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppReco
 
 //.......................................................................................................................
 //RestServer.get('/dvp/'+version+'/APPRegistry/VoiceAppManagement/FindVoiceAppRecordForID/:VID/:DevID',function(req,res,next)
-RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppRecordOf/:VID/DevelopedBy/:DevID',function(req,res,next)
+RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppRecordOf/:VID/DevelopedBy/:DevID',authorization({resource:"user", action:"write"}),function(req,res,next)
 {
     // log.info("\n.............................................Add appointment Starts....................................................\n");
     var reqId='';
@@ -586,9 +606,12 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/VoiceAppManagement/VoiceAppReco
         {
 
         }
+
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
         // log.info("Inputs : "+req.body);
         logger.debug('[DVP-APPRegistry.VoiceAppByIdAndDeveloperID] - [%s] - [HTTP] - Request received - Inputs - AppID : $s Developer : %s',reqId,req.params.VID,req.params.DevID);
-        VAPP.FindVoiceAppRecordByID(req.params.VID,req.params.DevID,reqId,function(err,resz)
+        VAPP.FindVoiceAppRecordByID(req.params.VID,req.params.DevID,Company,Tenant,reqId,function(err,resz)
         {
 
 

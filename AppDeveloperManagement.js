@@ -10,10 +10,10 @@ var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJ
 
 
 
-function AddNewDeveloperRecord(DevObj,reqId,callback)
+function AddNewDeveloperRecord(DevObj,Company,Tenant,reqId,callback)
 {
     try {
-        DbConn.AppDeveloper.find({where: [{Username: DevObj.Username}]}).complete(function (err, Dobj) {
+        DbConn.AppDeveloper.find({where: [{Username: DevObj.Username},{CompanyId:Company},{TenantId:Tenant}]}).complete(function (err, Dobj) {
             if (err) {
                 logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Error occurred find records of Developer %s ',reqId,DevObj.Username, err);
                 callback(err, undefined);
@@ -34,8 +34,8 @@ function AddNewDeveloperRecord(DevObj,reqId,callback)
                                 ObjClass: "OBJCLZ",
                                 ObjType: "OBJTYP",
                                 ObjCategory: "OBJCAT",
-                                CompanyId: 1,
-                                TenantId: 1,
+                                CompanyId: Company,
+                                TenantId: Tenant,
                                 RegDate: (new Date()).toString(),
                                 RefId:DevObj.RefId,
                                 Availability:DevObj.Availability
