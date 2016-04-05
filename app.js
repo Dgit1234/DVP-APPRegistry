@@ -29,6 +29,8 @@ RestServer.pre(restify.pre.userAgentConnection());
 RestServer.use(restify.CORS());
 RestServer.use(restify.fullResponse());
 RestServer.use(jwt({secret: secret.Secret}));
+
+restify.CORS.ALLOW_HEADERS.push('authorization');
 //Server listen
 
 RestServer.listen(port, function () {
@@ -95,7 +97,7 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Developer',authorization({reso
     catch(ex)
     {
 
-        logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - Exception occurred on calling method CreateDeveloper',reqId, ex);
+        logger.error('[DVP-APPRegistry.CreateDeveloper] -dis [%s] - Exception occurred on calling method CreateDeveloper',reqId, ex);
         var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
         logger.debug('[DVP-APPRegistry.CreateDeveloper] - [%s] - Request response : %s ', reqId, jsonString);
         res.end(jsonString);

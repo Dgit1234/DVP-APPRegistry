@@ -4,9 +4,7 @@
  */
 
 var DbConn = require('dvp-dbmodels');
-var stringify = require('stringify');
-var open = require('open');
-var http=require('http');
+
 var httpreq=require('request');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
