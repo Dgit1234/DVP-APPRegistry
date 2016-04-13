@@ -25,7 +25,7 @@ module.exports = {
   "Host":
   {
     "domain": "0.0.0.0",
-    "port": "8013",
-    "version":"6.0"
+    "port": "8016",
+    "version":"1.0.0.0"
   }
 };
