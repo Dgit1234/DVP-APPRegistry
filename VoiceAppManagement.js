@@ -471,7 +471,7 @@ function ModifyApplicationURL(AppId,VAPPObj,Company,Tenant,reqId,callback) {
 
 }
 
-function TestApplication(AppId,reqId,callback) {
+function TestApplication(AppId,Company,Tenant,reqId,callback) {
     if(!isNaN(AppId)&& AppId)
     {
         try
