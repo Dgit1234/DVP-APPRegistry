@@ -650,14 +650,16 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:status',authoriza
         APP.PickActiveApplications(req.params.status, Company, Tenant, reqId, function (err, resz) {
 
 
-            if (err) {
+            if (err)
+            {
 
                 logger.error('[DVP-APPRegistry.PickActiveApplications] - [VOICEAPP] - Error occurred on method PickActiveApplications ');
                 var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
                 logger.debug('[DVP-APPRegistry.PickActiveApplications] - [%s] - Request response : %s ', reqId, jsonString);
                 res.end(jsonString);
             }
-            else {
+            else
+            {
 
                 logger.debug('[DVP-APPRegistry.PickActiveApplications] - [VOICEAPP] - Record found - Returns - ' + resz);
                 var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);

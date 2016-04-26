@@ -278,21 +278,23 @@ function PickAllApplications(reqId,Company,Tenant,callback) {
 
 }
 
-function PickActiveApplications(status,reqId,callback) {
+function PickActiveApplications(status,Company,Tenant,reqId,callback) {
 
     try{
-        DbConn.Application.findAll({where: [{Availability: status}]}).then(function (resApp) {
+        DbConn.Application.findAll({where: [{Availability: status},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
 
             if(resApp) {
                 logger.info('[DVP-APPRegistry.PickActiveApplications] - [%s] - [PGSQL] - Record found for Active Applications ',reqId);
                 callback(undefined, resApp);
             }
-            else{
+            else
+            {
                 logger.error('[DVP-APPRegistry.PickActiveApplications] - [%s] - [PGSQL] - No record found for Active Applications ',reqId);
                 callback(new Error("No record Found"),undefined);
             }
 
-        }).catch(function (errApp) {
+        }).catch(function (errApp)
+        {
             logger.error('[DVP-APPRegistry.PickActiveApplications] - [%s] - [PGSQL] - Error occurred while searching Active Applications ',reqId);
             callback(errApp,undefined);
         });
