@@ -256,6 +256,59 @@ RestServer.post('/DVP/API/'+version+'/APPRegistry/Application/:CAppID/SetAsMaste
     next();
 });
 
+RestServer.put('/DVP/API/'+version+'/APPRegistry/Application/:AppID',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
+
+    var reqId='';
+    try {
+
+        try
+        {
+            reqId = uuid.v1();
+        }
+        catch(ex)
+        {
+
+        }
+
+        if(!req.user.company || !req.user.tenant) {
+
+            throw new Error("Invalid company or tenant");
+        }
+
+
+        var Company = req.user.company;
+        var Tenant = req.user.tenant;
+        logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - [HTTP] - Request Received - Inputs - id %s others %s', reqId, req.params.AppID, JSON.stringify(req.body));
+        APP.UpdateAppData(req.params.AppID, req.body,Company,Tenant, reqId, function (err, resz) {
+
+
+            if (err) {
+                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
+                logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
+            }
+            else {
+                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
+                logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
+                res.end(jsonString);
+            }
+
+        });
+
+
+
+
+    }
+    catch(ex)
+    {
+        logger.error('[DVP-APPRegistry.UpdateApplication] - [HTTP] - Exception occurred on method UpdateApplication ',reqId, ex);
+        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
+        logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
+        res.end(jsonString);
+    }
+    return next();
+});
+
 RestServer.del('/DVP/API/'+version+'/APPRegistry/Application/:id',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
     var reqId='';
     try {
@@ -681,58 +734,7 @@ RestServer.get('/DVP/API/'+version+'/APPRegistry/Applications/:status',authoriza
     return next();
 });
 //no swagger
-RestServer.put('/DVP/API/'+version+'/APPRegistry/Application/:AppID',authorization({resource:"appreg", action:"write"}),function(req,res,next) {
 
-    var reqId='';
-    try {
-
-        try
-        {
-            reqId = uuid.v1();
-        }
-        catch(ex)
-        {
-
-        }
-
-        if(!req.user.company || !req.user.tenant) {
-
-            throw new Error("Invalid company or tenant");
-        }
-
-
-        var Company = req.user.company;
-        var Tenant = req.user.tenant;
-        logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - [HTTP] - Request Received - Inputs - id %s others %s', reqId, req.params.AppID, JSON.stringify(req.body));
-        APP.UpdateAppData(req.params.AppID, req.body,Company,Tenant, reqId, function (err, resz) {
-
-
-            if (err) {
-                var jsonString = messageFormatter.FormatMessage(err, "ERROR/EXCEPTION", false, undefined);
-                logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
-                res.end(jsonString);
-            }
-            else {
-                var jsonString = messageFormatter.FormatMessage(undefined, "SUCCESS", true, resz);
-                logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
-                res.end(jsonString);
-            }
-
-        });
-
-
-
-
-    }
-    catch(ex)
-    {
-        logger.error('[DVP-APPRegistry.UpdateApplication] - [HTTP] - Exception occurred on method UpdateApplication ',reqId, ex);
-        var jsonString = messageFormatter.FormatMessage(ex, "EXCEPTION", false, undefined);
-        logger.debug('[DVP-APPRegistry.UpdateApplication] - [%s] - Request response : %s ', reqId, jsonString);
-        res.end(jsonString);
-    }
-    return next();
-});
 
 function Crossdomain(req,res,next){
 
