@@ -249,7 +249,7 @@ function PickApplicationRecord(AppID,reqId,callback) {
 function PickAllApplications(reqId,Company,Tenant,callback) {
 
     try{
-        DbConn.Application.findAll({where:[{CompanyId:Company},{TenantId:Tenant}]}).then(function (resApp) {
+        DbConn.Application.findAll({where:[{CompanyId:Company},{TenantId:Tenant}],include:[{model: DbConn.Application, as:'MasterApplication'}]}).then(function (resApp) {
 
             if(resApp) {
                 logger.info('[DVP-APPRegistry.PickAllApplications] - [%s] - [PGSQL] - Record found for Applications ',reqId);
@@ -643,6 +643,11 @@ function UpdateAppData(AppId,updtObj,Company,Tenant,reqId,callback) {
                 if(resApp)
                 {
                     logger.info('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] - Record of  Application %s is found',reqId,AppId);
+
+                    delete updtObj.AppName;
+                    delete updtObj.CompanyId;
+                    delete updtObj.TenantId;
+
                     resApp.updateAttributes(updtObj).then(function (resUpdate) {
 
                         logger.info('[DVP-APPRegistry.UpdateAppData] - [%s] - [PGSQL] -  Application %s is updated ',reqId,AppId);

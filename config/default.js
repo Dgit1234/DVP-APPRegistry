@@ -18,7 +18,7 @@ module.exports = {
   {
     "ip" : "45.55.142.207",
     "port": 6389,
-    "user": "[",
+    "user": "",
     "password": "DuoS123"
   },
 
