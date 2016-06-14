@@ -75,4 +75,40 @@ function CreateDeveloper(DevObj,Company,Tenant,reqId,callback) {
 
 }
 
+function PickDevelopers(Company,Tenant,reqId,callback) {
+
+        try {
+            DbConn.AppDeveloper.findAll({where: [{CompanyId:Company},{TenantId:Tenant}]}).then(function (resDev) {
+
+                if (resDev)
+                {
+                    logger.info('[DVP-APPRegistry.PickDevelopers] - [%s] - [PGSQL] - Developers found',reqId);
+                    callback(undefined, resDev);
+                }
+                else
+                {
+                    logger.error('[DVP-APPRegistry.PickDevelopers] - [%s] - [PGSQL] - Developers not found',reqId);
+                    callback(new Error('Developers not found'), undefined);
+                }
+
+            }).catch(function (errDev) {
+
+                logger.error('[DVP-APPRegistry.PickDevelopers] - [%s] - [PGSQL] - Error occurred find records of Developers ',reqI, errDev);
+                callback(errDev, undefined);
+
+            });
+
+
+        }
+        catch(ex)
+        {
+            logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - Exception in calling  method : CreateDeveloper',reqId, ex);
+            callback(ex,undefined);
+        }
+
+
+
+}
+
 module.exports.CreateDeveloper = CreateDeveloper;
+module.exports.PickDevelopers = PickDevelopers;

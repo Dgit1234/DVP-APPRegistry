@@ -25,7 +25,8 @@ function CreateVoiceApplication(appobj,Company,Tenant,reqId,callback) {
                 {
                     logger.error('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - VoiceApp Name %s is already taken',reqId,appobj.AppName);
                     callback(new Error('AppName is Already taken'), undefined);
-                }else
+                }
+                else
                 {
                     if(appobj.ObjType=="HTTAPI"|| appobj.ObjType=="SOCKET" || appobj.ObjType=="EXTENDED")
                     {
@@ -33,8 +34,35 @@ function CreateVoiceApplication(appobj,Company,Tenant,reqId,callback) {
                         {
                             if(appobj.IsDeveloper)
                             {
-                                ObjClass = "DEVELOPER"
-                            }else
+                                ObjClass = "DEVELOPER";
+
+                                /*if(appobj.AppDeveloperId)
+                                {
+                                    DbConn.AppDeveloper.find({where:[{id:appobj.AppDeveloperId},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resDev) {
+
+                                        if(resDev)
+                                        {
+                                            console.log("Developer record found for "+appobj.AppDeveloperId);
+                                        }
+                                        else
+                                        {
+                                            logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - No Developer found for given details %s ', reqId,appobj.AppDeveloperId);
+                                            callback(new Error("Invalid Developer Details"), undefined);
+                                        }
+
+                                    }).catch(function (errDev) {
+                                        logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Exception in searching Developer ID: %s ', reqId,appobj.AppDeveloperId);
+                                        callback(errDev, undefined);
+                                    });
+                                }
+                                else
+                                {
+                                    logger.info('[DVP-APPRegistry.CreateVoiceApplication] - [%s] - [PGSQL] - Empty data recieved for Developer ID  ', reqId);
+                                    callback(new Error("Empty data recieved for Developer ID"), undefined);
+                                }*/
+
+                            }
+                            else
                             {
                                 ObjClass = "SYSTEM"
                             }
@@ -249,7 +277,7 @@ function PickApplicationRecord(AppID,reqId,callback) {
 function PickAllApplications(reqId,Company,Tenant,callback) {
 
     try{
-        DbConn.Application.findAll({where:[{CompanyId:Company},{TenantId:Tenant}],include:[{model: DbConn.Application, as:'MasterApplication'}]}).then(function (resApp) {
+        DbConn.Application.findAll({where:[{CompanyId:Company},{TenantId:Tenant}],include:[{model: DbConn.Application, as:'MasterApplication'}],include:[{model: DbConn.AppDeveloper, as:'AppDeveloper'}]}).then(function (resApp) {
 
             if(resApp) {
                 logger.info('[DVP-APPRegistry.PickAllApplications] - [%s] - [PGSQL] - Record found for Applications ',reqId);
