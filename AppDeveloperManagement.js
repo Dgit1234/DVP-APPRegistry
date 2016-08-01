@@ -1,26 +1,19 @@
 /**
  * Created by pawan on 4/8/2015.
  */
-var DbConn = require('DVP-DBModels');
-//var messageFormatter = require('./DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
-var stringify = require('stringify');
-var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
-var messageFormatter = require('DVP-Common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
+var DbConn = require('dvp-dbmodels');
+var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
+var messageFormatter = require('dvp-common/CommonMessageGenerator/ClientMessageJsonFormatter.js');
 
 
+function CreateDeveloper(DevObj,Company,Tenant,reqId,callback) {
+    if(DevObj && DevObj.Username)
+    {
+        try {
+            DbConn.AppDeveloper.find({where: [{Username: DevObj.Username},{CompanyId:Company},{TenantId:Tenant}]}).then(function (resDev) {
 
-
-function AddNewDeveloperRecord(DevObj,Company,Tenant,reqId,callback)
-{
-    try {
-        DbConn.AppDeveloper.find({where: [{Username: DevObj.Username},{CompanyId:Company},{TenantId:Tenant}]}).complete(function (err, Dobj) {
-            if (err) {
-                logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Error occurred find records of Developer %s ',reqId,DevObj.Username, err);
-                callback(err, undefined);
-            }
-            else {
-                if (Dobj) {
-                    logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Developer Username %s is already taken',reqId,DevObj.Username);
+                if (resDev) {
+                    logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - Developer Username %s is already taken',reqId,DevObj.Username);
                     callback(new Error('Username is Already taken'), undefined);
                 }
                 else {
@@ -35,40 +28,87 @@ function AddNewDeveloperRecord(DevObj,Company,Tenant,reqId,callback)
                                 ObjType: "OBJTYP",
                                 ObjCategory: "OBJCAT",
                                 CompanyId: Company,
-                                TenantId: Tenant,
+                                TenantId:Tenant,
                                 RegDate: (new Date()).toString(),
                                 RefId:DevObj.RefId,
                                 Availability:DevObj.Availability
                             }
-                        ).complete(function(err,result)
+                        ).then(function (resDevSave) {
 
-                            {
-                                if(err)
-                                {
-                                    logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record %s insertion failed',reqId,JSON.stringify(DevObj), err);
-                                    callback(err,undefined);
-                                }
-                                else
-                                {
-                                    logger.debug('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - New Developer record insertion succeeded. Result - ',reqId,JSON.stringify(result));
-                                    callback(undefined,result);
-                                }
+                                logger.debug('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - New Developer record insertion succeeded.',reqId);
+                                callback(undefined,resDevSave);
+
+                            }).catch(function (errDevSave) {
+                                logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - New Developer record  insertion failed', reqId,errDevSave);
+                                callback(errDevSave,undefined);
                             });
+
+
+                          
                     }
                     catch(ex)
                     {
-                        logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - [PGSQL] - Exception in insertion of New Developer record %s ',reqId,JSON.stringify(DevObj), ex);
+                        logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - Exception in insertion of New Developer record %s ',reqId,JSON.stringify(DevObj), ex);
                         callback(ex,undefined);
                     }
                 }
-            }
-        })
+
+            }).catch(function (errDev) {
+
+                logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - [PGSQL] - Error occurred find records of Developer %s ',reqId,DevObj.Username, errDev);
+                callback(errDev, undefined);
+
+            });
+
+
+        }
+        catch(ex)
+        {
+            logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - Exception in calling  method : CreateDeveloper',reqId, ex);
+            callback(ex,undefined);
+        }
     }
-    catch(ex)
+    else
     {
-        logger.error('[DVP-APPRegistry.AddNewDeveloperRecord] - [%s] - Exception in calling  method : AddNewDeveloperRecord',reqId, ex);
-        callback(ex,undefined);
+        callback(new Error("Empty request or Developer Username is Undefined"),undefined);
     }
+
 }
 
-module.exports.AddNewDeveloperRecord = AddNewDeveloperRecord;
+function PickDevelopers(Company,Tenant,reqId,callback) {
+
+        try {
+            DbConn.AppDeveloper.findAll({where: [{CompanyId:Company},{TenantId:Tenant}]}).then(function (resDev) {
+
+                if (resDev)
+                {
+                    logger.info('[DVP-APPRegistry.PickDevelopers] - [%s] - [PGSQL] - Developers found',reqId);
+                    callback(undefined, resDev);
+                }
+                else
+                {
+                    logger.error('[DVP-APPRegistry.PickDevelopers] - [%s] - [PGSQL] - Developers not found',reqId);
+                    callback(new Error('Developers not found'), undefined);
+                }
+
+            }).catch(function (errDev) {
+
+                logger.error('[DVP-APPRegistry.PickDevelopers] - [%s] - [PGSQL] - Error occurred find records of Developers ',reqI, errDev);
+                callback(errDev, undefined);
+
+            });
+
+
+        }
+        catch(ex)
+        {
+            logger.error('[DVP-APPRegistry.CreateDeveloper] - [%s] - Exception in calling  method : CreateDeveloper',reqId, ex);
+            callback(ex,undefined);
+        }
+
+
+
+}
+
+module.exports.CreateDeveloper = CreateDeveloper;
+module.exports.PickDevelopers = PickDevelopers;
