@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "5"
 script:
-  - unittest
+  - mocha unittest.js
 before_script:
   - npm install
 
