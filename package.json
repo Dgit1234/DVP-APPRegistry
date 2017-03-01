@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/DuoSoftware/DVP-APPRegistry#readme",
   "dependencies": {
+    "assert": "^1.4.1",
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
     "config": "^1.19.0",
     "cors": "^2.7.1",
     "dvp-common": "^0.1.3",
