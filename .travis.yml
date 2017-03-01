@@ -1,9 +1,8 @@
 language: node_js
 node_js:
   - "5"
-script: ./unittest
+script:
+  - unittest
 before_script:
-  - npm install -g gulp
-script: gulp
-install:
   - npm install
+
