@@ -4,4 +4,6 @@
 - script: gulp travis
 - before_script:
   - npm install -g gulp
-- script: gulp travis
+- script: gulp
+- install:
+  - npm install
