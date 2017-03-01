@@ -1,7 +1,7 @@
 language: node_js
 node_js:
   - "5"
-script: gulp travis
+script: ./unittest
 before_script:
   - npm install -g gulp
 script: gulp
