@@ -6,4 +6,3 @@ script:
 before_script:
   - npm install -g mocha
   - npm install
-
